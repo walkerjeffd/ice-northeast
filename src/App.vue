@@ -124,7 +124,8 @@
         <ice-map-layer
           :layer="layer"
           :set-bounds="true"
-          :color-scale="color"
+          :get-color="getColor"
+          :get-value="getValue"
           @click="selectFeature" />
       </ice-map>
       <div
@@ -298,13 +299,16 @@ export default {
     selectFeature (feature) {
       console.log('selectFeature', feature.id, getGroupByKey(feature.id))
     },
-    color (feature) {
+    getColor (feature) {
       const group = getGroupByKey(feature.id)
       const value = group ? group.mean : null
       const scaled = this.variableScale(value)
       const color = group ? this.colorScale(scaled) : '#EEEEEE'
-      // console.log(feature.id, value, scaled, color)
       return color
+    },
+    getValue (feature) {
+      const group = getGroupByKey(feature.id)
+      return group ? group.mean : null
     }
   }
 }
