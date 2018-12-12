@@ -1,0 +1,73 @@
+{
+  "themes": [
+    {
+      "id": "huc8",
+      "label": "HUC8",
+      "dataset": {
+        "url": "huc8.csv"
+      },
+      "layer": {
+        "url": "huc8.json",
+        "type": "topojson",
+        "object": "huc8"
+      },
+      "group": {
+        "by": "huc8",
+        "weight": "area_km2"
+      },
+      "variables": [
+        {
+          "id": "area_km2",
+          "label": "Area (km2)",
+          "map": false
+        },
+        {
+          "id": "elevation",
+          "label": "Elevation",
+          "default": true,
+          "map": true
+        },
+        {
+          "id": "forest",
+          "label": "Forest Cover",
+          "map": true
+        }
+      ]
+    },
+    {
+      "default": true,
+      "id": "huc6",
+      "label": "HUC6",
+      "dataset": {
+        "url": "huc6.csv"
+      },
+      "layer": {
+        "url": "huc6.json",
+        "type": "topojson",
+        "object": "huc6"
+      },
+      "group": {
+        "by": "huc6",
+        "weight": "area_km2"
+      },
+      "variables": [
+        {
+          "id": "area_km2",
+          "label": "Area (km2)",
+          "map": false
+        },
+        {
+          "id": "elevation",
+          "label": "Elevation",
+          "map": true
+        },
+        {
+          "id": "forest",
+          "label": "Forest Cover",
+          "default": true,
+          "map": true
+        }
+      ]
+    }
+  ]
+}
