@@ -29,7 +29,7 @@
           "label": "Elevation",
           "map": true,
           "scale": {
-            "domain": [0, 1600],
+            "domain": [0, 500],
             "transform": "log"
           }
         },
@@ -73,7 +73,7 @@
           "label": "Elevation",
           "map": true,
           "scale": {
-            "domain": [0, 1600],
+            "domain": [0, 500],
             "transform": "log"
           }
         },

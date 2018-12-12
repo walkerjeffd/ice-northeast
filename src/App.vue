@@ -52,12 +52,31 @@
             </div>
           </div>
         </div>
+        <div class="ice-box">
+          <div class="row">
+            <div class="col-xs-3">
+              <div class="ice-box-label">Colors</div>
+            </div>
+            <div class="col-xs-9">
+              <select-picker
+                :config="{}"
+                :options="colorOptions"
+                :value="selected.color"
+                :multiple="false"
+                @input="selectColor"
+                value-field="id"
+                text-field="label"
+                title="Select color scheme..."
+              />
+            </div>
+          </div>
+        </div>
       </div>
       <ice-map :options="map.options">
         <ice-map-layer
           :layer="layer"
           :set-bounds="true"
-          :color-scale="colorScale"
+          :color-scale="color"
           @click="selectFeature" />
       </ice-map>
       <div
@@ -103,9 +122,17 @@ export default {
           minZoom: 5
         }
       },
+      colorOptions: [
+        { id: 'YlGnBu', label: 'Yellow-Green-Blue' },
+        { id: 'Viridis', label: 'Viridis' },
+        { id: 'Inferno', label: 'Inferno' },
+        { id: 'Warm', label: 'Warm' },
+        { id: 'Cool', label: 'Cool' }
+      ],
       selected: {
         theme: null,
-        variable: null
+        variable: null,
+        color: 'YlGnBu'
       }
     }
   },
@@ -114,15 +141,40 @@ export default {
     mapVariables () {
       return this.variables.filter(v => v.map)
     },
-    colors () {
-      if (!this.variable) return
+    variableScale () {
+      console.log('variableScale', this.variable)
 
+      // variable.scale.domain -> [0, 1]
+      if (!this.variable) return d3.scaleLinear()
+
+      const transform = this.variable.scale.transform
       const domain = this.variable.scale.domain
 
-      return d3.scaleLinear()
-        .domain([domain[0], d3.mean(domain), domain[1]])
-        .range(['#6BB844', '#F7EB48', '#EF4545'])
-        .interpolate(d3.interpolateHcl)
+      let scale
+      switch (transform.type) {
+        case 'log':
+          scale = d3.scaleLog()
+          break
+        case 'linear':
+          scale = d3.scaleLinear()
+          break
+        default:
+          scale = d3.scaleLinear()
+          break
+      }
+
+      return scale
+        .domain(domain)
+        .range([0, 1])
+        .clamp(true)
+    },
+    colorScale () {
+      return d3.scaleSequential(d3[`interpolate${this.selected.color}`])
+      // return d3.scaleSequential(d3.interpolateViridis)
+      // return d3.scaleSequential(d3.interpolateYlGnBu)
+      // return d3.scaleSequential(d3.interpolateInferno)
+      // return d3.scaleSequential(d3.interpolateWarm)
+      // return d3.scaleSequential(d3.interpolateCool)
     }
   },
   created () {
@@ -135,6 +187,10 @@ export default {
       })
   },
   methods: {
+    selectColor (color) {
+      this.selected.color = color
+      evt.$emit('map:render')
+    },
     selectTheme (id) {
       this.loading = true
       this.$store.dispatch('selectThemeById', id)
@@ -170,9 +226,9 @@ export default {
     selectFeature (feature) {
       console.log('selectFeature', feature.id, getGroupByKey(feature.id))
     },
-    colorScale (feature) {
+    color (feature) {
       const group = getGroupByKey(feature.id)
-      return group ? this.colors(group.mean) : '#EEEEEE'
+      return group ? this.colorScale(this.variableScale(group.mean)) : '#EEEEEE'
     }
   }
 }
