@@ -7,13 +7,20 @@ import * as crossfilter from 'crossfilter2'
 Vue.use(Vuex)
 
 const xf = crossfilter()
+window.xf = xf
 
-let dim
-let group
+let agg = {
+  dim: undefined,
+  group: undefined,
+  map: {}
+}
+// const weightSum = new Map()
 
 export function getGroupByKey (key) {
-  return group.all().find(d => d.key === key)
+  return agg.map[key]
 }
+
+window.agg = agg
 
 export const store = new Vuex.Store({
   state: {
@@ -55,20 +62,46 @@ export const store = new Vuex.Store({
       return axios.get(`${theme.dataset.url}`)
         .then(response => response.data)
         .then((csv) => {
-          const data = d3.csv.parse(csv, (d) => {
-            getters.variables.forEach((v) => {
-              d[v.id] = d[v.id] === 'NA' ? null : +d[v.id]
+          const data = d3.csvParse(csv, (d) => {
+            theme.variables.forEach((v) => {
+              d[v.id] = d[v.id] === theme.dataset.na_value ? null : +d[v.id]
             })
             return d
           })
 
-          if (group) group.dispose()
-          if (dim) dim.dispose()
+          if (agg.group) agg.group.dispose()
+          if (agg.dim) agg.dim.dispose()
 
           xf.remove()
           xf.add(data)
 
-          dim = xf.dimension(d => d[theme.group.by])
+          agg.dim = xf.dimension(d => d[theme.group.by])
+
+          // const weightGroup = agg.dim.group().reduce(
+          //   (p, v) => {
+          //     p.count += 1
+          //     p.weight += v[theme.group.weight]
+          //     return p
+          //   },
+          //   (p, v) => {
+          //     p.count -= 1
+          //     p.weight -= v[theme.group.weight]
+          //     return p
+          //   },
+          //   () => {
+          //     return {
+          //       count: 0,
+          //       weight: 0
+          //     }
+          //   }
+          // )
+
+          // weightSum.clear()
+          // weightGroup.all().forEach(d => {
+          //   weightSum.set(d.key, d.value)
+          // })
+
+          // weightGroup.dispose()
 
           commit('SET_THEME', theme)
 
@@ -82,10 +115,41 @@ export const store = new Vuex.Store({
 
       if (!variable) return
 
-      commit('SET_VARIABLE', variable)
+      const theme = getters.theme
 
-      if (group) group.dispose()
-      group = dim.group().reduceSum(d => d[variable.id])
+      agg.map = {}
+
+      if (agg.group) agg.group.dispose()
+      agg.group = agg.dim.group().reduce(
+        (p, v) => {
+          p.count += 1
+          p.sum += v[variable.id] * v[theme.group.weight]
+          p.wsum += v[theme.group.weight]
+          p.mean = p.count >= 1 ? p.sum / p.wsum : null
+          return p
+        },
+        (p, v) => {
+          p.count -= 1
+          p.sum -= v[variable.id] * v[theme.group.weight]
+          p.wsum -= v[theme.group.weight]
+          p.mean = p.count >= 1 ? p.sum / p.wsum : null
+          return p
+        },
+        () => {
+          return {
+            count: 0,
+            sum: 0,
+            wsum: 0,
+            mean: null
+          }
+        }
+      )
+
+      agg.group.all().forEach(d => {
+        agg.map[d.key] = d.value // d is a reference, automatically updates after filtering
+      })
+
+      commit('SET_VARIABLE', variable)
 
       return Promise.resolve(variable)
     }

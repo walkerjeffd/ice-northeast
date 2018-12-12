@@ -4,10 +4,12 @@
       "id": "huc8",
       "label": "HUC8",
       "dataset": {
-        "url": "huc8.csv"
+        "url": "huc8.csv",
+        "na_value": "NA"
       },
       "layer": {
         "url": "huc8.json",
+        "geometry": "polygon",
         "type": "topojson",
         "object": "huc8"
       },
@@ -22,15 +24,23 @@
           "map": false
         },
         {
+          "default": true,
           "id": "elevation",
           "label": "Elevation",
-          "default": true,
-          "map": true
+          "map": true,
+          "scale": {
+            "domain": [0, 1600],
+            "transform": "log"
+          }
         },
         {
           "id": "forest",
           "label": "Forest Cover",
-          "map": true
+          "map": true,
+          "scale": {
+            "domain": [0, 100],
+            "transform": "linear"
+          }
         }
       ]
     },
@@ -39,10 +49,12 @@
       "id": "huc6",
       "label": "HUC6",
       "dataset": {
-        "url": "huc6.csv"
+        "url": "huc6.csv",
+        "na_value": "NA"
       },
       "layer": {
         "url": "huc6.json",
+        "geometry": "polygon",
         "type": "topojson",
         "object": "huc6"
       },
@@ -59,13 +71,21 @@
         {
           "id": "elevation",
           "label": "Elevation",
-          "map": true
+          "map": true,
+          "scale": {
+            "domain": [0, 1600],
+            "transform": "log"
+          }
         },
         {
+          "default": true,
           "id": "forest",
           "label": "Forest Cover",
-          "default": true,
-          "map": true
+          "map": true,
+          "scale": {
+            "domain": [0, 100],
+            "transform": "linear"
+          }
         }
       ]
     }

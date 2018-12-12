@@ -11,6 +11,7 @@ export default {
   props: ['setBounds', 'layer', 'colorScale'],
   mounted () {
     evt.$on('map:zoom', this.resize)
+    evt.$on('map:render', this.render)
   },
   data () {
     return {
@@ -28,8 +29,8 @@ export default {
         const point = map.latLngToLayerPoint(new L.LatLng(y, x))
         this.stream.point(point.x, point.y)
       }
-      const transform = d3.geo.transform({ point: projectPoint })
-      return d3.geo.path().projection(transform)
+      const transform = d3.geoTransform({ point: projectPoint })
+      return d3.geoPath().projection(transform)
     },
     svg () {
       return this.$parent.svg
@@ -88,11 +89,9 @@ export default {
         .append('path')
         .style('cursor', 'pointer')
         .style('pointer-events', 'visible')
-        .on('click', (d) => {
-          if (!this.$parent.disableClick) this.$emit('click', d)
-        })
-
-      paths.attr('d', this.path)
+        .on('click', (d) => (!this.$parent.disableClick && this.$emit('click', d)))
+        .merge(paths)
+        .attr('d', this.path)
         .style('fill', this.colorScale)
 
       paths.exit().remove()

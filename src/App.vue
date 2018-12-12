@@ -71,22 +71,18 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import axios from 'axios'
 import { mapGetters } from 'vuex'
 import * as d3 from 'd3'
 
-// import EventBus from './event-bus'
+import evt from './event-bus'
 
 import IceHeader from './components/IceHeader.vue'
 import IceMap from './components/IceMap.vue'
 import IceMapLayer from './components/IceMapLayer.vue'
 import SelectPicker from './components/SelectPicker.vue'
 import { getGroupByKey } from '@/store'
-
-const colorScale = d3.scale.linear()
-  .domain([0, 0.5, 1])
-  .range(['#6BB844', '#F7EB48', '#EF4545'])
-  .interpolate(d3.interpolateHcl)
 
 export default {
   name: 'app',
@@ -117,6 +113,16 @@ export default {
     ...mapGetters(['themes', 'layer', 'variables', 'variable']),
     mapVariables () {
       return this.variables.filter(v => v.map)
+    },
+    colors () {
+      if (!this.variable) return
+
+      const domain = this.variable.scale.domain
+
+      return d3.scaleLinear()
+        .domain([domain[0], d3.mean(domain), domain[1]])
+        .range(['#6BB844', '#F7EB48', '#EF4545'])
+        .interpolate(d3.interpolateHcl)
     }
   },
   created () {
@@ -158,14 +164,15 @@ export default {
       this.$store.dispatch('selectVariableById', id)
         .then(() => {
           this.selected.variable = id
+          evt.$emit('map:render')
         })
     },
     selectFeature (feature) {
-      const item = getGroupByKey(feature.id)
-      console.log('selectFeature', feature.id, item.value)
+      console.log('selectFeature', feature.id, getGroupByKey(feature.id))
     },
-    colorScale () {
-      return colorScale(Math.random())
+    colorScale (feature) {
+      const group = getGroupByKey(feature.id)
+      return group ? this.colors(group.mean) : '#EEEEEE'
     }
   }
 }
