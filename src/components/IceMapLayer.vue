@@ -90,6 +90,17 @@ export default {
         .style('cursor', 'pointer')
         .style('pointer-events', 'visible')
         .on('click', (d) => (!this.$parent.disableClick && this.$emit('click', d)))
+        .on('mouseover', function (d) {
+          this.parentNode.appendChild(this) // move to front
+          d3.select(this)
+            .style('stroke', 'white')
+            .style('stroke-width', '1')
+        })
+        .on('mouseout', function (d) {
+          d3.select(this)
+            .style('stroke', null)
+            .style('stroke-width', null)
+        })
         .merge(paths)
         .attr('d', this.path)
         .style('fill', this.colorScale)

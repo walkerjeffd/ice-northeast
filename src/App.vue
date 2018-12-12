@@ -99,6 +99,26 @@
             </div>
           </div>
         </div>
+        <div class="ice-box">
+          <div class="row">
+            <div class="col-xs-3">
+              <div class="ice-box-label">Transform</div>
+            </div>
+            <div class="col-xs-9">
+              <select-picker
+                id="color"
+                :config="{}"
+                :options="transformOptions"
+                :value="selected.transform"
+                :multiple="false"
+                @input="selectTransform"
+                value-field="id"
+                text-field="label"
+                title="Select transformation..."
+              />
+            </div>
+          </div>
+        </div>
       </div>
       <ice-map :options="map.options">
         <ice-map-layer
@@ -172,10 +192,15 @@ export default {
         { id: 'VA', label: 'Virginia' },
         { id: 'WV', label: 'West Virginia' }
       ],
+      transformOptions: [
+        { id: 'linear', label: 'Linear' },
+        { id: 'log', label: 'Log' }
+      ],
       selected: {
         theme: null,
         variable: null,
         color: 'YlGnBu',
+        transform: 'linear',
         states: ['CT', 'DE', 'DC', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT', 'VA', 'WV']
       }
     }
@@ -186,18 +211,16 @@ export default {
       return this.variables.filter(v => v.map)
     },
     variableScale () {
-      console.log('variableScale', this.variable)
-
-      // variable.scale.domain -> [0, 1]
       if (!this.variable) return d3.scaleLinear()
 
-      const transform = this.variable.scale.transform
+      const transform = this.selected.transform
       const domain = this.variable.scale.domain
 
       let scale
-      switch (transform.type) {
+      switch (transform) {
         case 'log':
           scale = d3.scaleLog()
+          if (domain[0] <= 0) domain[0] = 0.1
           break
         case 'linear':
           scale = d3.scaleLinear()
@@ -233,12 +256,16 @@ export default {
     selectStates (states) {
       this.selected.states = states
     },
+    selectTransform (transform) {
+      console.log('selectTransform', transform)
+      this.selected.transform = transform
+      evt.$emit('map:render')
+    },
     selectTheme (id) {
       this.loading = true
       this.$store.dispatch('selectThemeById', id)
         .then(() => {
           this.selected.theme = id
-
           return Promise.resolve()
         })
         .then(() => {
@@ -249,12 +276,10 @@ export default {
           } else {
             this.selectVariable(this.selected.variable)
           }
-
           return Promise.resolve()
         })
         .then(() => {
           this.loading = false
-
           return Promise.resolve()
         })
     },
@@ -262,6 +287,11 @@ export default {
       this.$store.dispatch('selectVariableById', id)
         .then(() => {
           this.selected.variable = id
+        })
+        .then(() => {
+          this.selectTransform(this.variable.scale.transform)
+        })
+        .then(() => {
           evt.$emit('map:render')
         })
     },
@@ -270,7 +300,11 @@ export default {
     },
     color (feature) {
       const group = getGroupByKey(feature.id)
-      return group ? this.colorScale(this.variableScale(group.mean)) : '#EEEEEE'
+      const value = group ? group.mean : null
+      const scaled = this.variableScale(value)
+      const color = group ? this.colorScale(scaled) : '#EEEEEE'
+      // console.log(feature.id, value, scaled, color)
+      return color
     }
   }
 }
