@@ -21,6 +21,7 @@
             </div>
             <div class="col-xs-9">
               <select-picker
+                id="theme"
                 :config="{}"
                 :options="themes"
                 :value="selected.theme"
@@ -36,10 +37,36 @@
         <div class="ice-box">
           <div class="row">
             <div class="col-xs-3">
+              <div class="ice-box-label">States</div>
+            </div>
+            <div class="col-xs-9">
+              <select-picker
+                id="states"
+                :config="{
+                  actionsBox: true,
+                  selectedTextFormat: 'count',
+                  countSelectedText: '{0} states selected',
+                  dropupAuto: false
+                }"
+                :options="stateOptions"
+                :value="selected.states"
+                :multiple="true"
+                @input="selectStates"
+                value-field="id"
+                text-field="label"
+                title="Select states..."
+              />
+            </div>
+          </div>
+        </div>
+        <div class="ice-box">
+          <div class="row">
+            <div class="col-xs-3">
               <div class="ice-box-label">Variable</div>
             </div>
             <div class="col-xs-9">
               <select-picker
+                id="variable"
                 :config="{}"
                 :options="mapVariables"
                 :value="selected.variable"
@@ -59,6 +86,7 @@
             </div>
             <div class="col-xs-9">
               <select-picker
+                id="color"
                 :config="{}"
                 :options="colorOptions"
                 :value="selected.color"
@@ -90,7 +118,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import axios from 'axios'
 import { mapGetters } from 'vuex'
 import * as d3 from 'd3'
@@ -129,10 +156,27 @@ export default {
         { id: 'Warm', label: 'Warm' },
         { id: 'Cool', label: 'Cool' }
       ],
+      stateOptions: [
+        { id: 'CT', label: 'Connecticut' },
+        { id: 'DE', label: 'Delaware' },
+        { id: 'DC', label: 'District of Columbia' },
+        { id: 'ME', label: 'Maine' },
+        { id: 'MD', label: 'Maryland' },
+        { id: 'MA', label: 'Massachusetts' },
+        { id: 'NH', label: 'New Hampshire' },
+        { id: 'NJ', label: 'New Jersey' },
+        { id: 'NY', label: 'New York' },
+        { id: 'PA', label: 'Pennsylvania' },
+        { id: 'RI', label: 'Rhode Island' },
+        { id: 'VT', label: 'Vermont' },
+        { id: 'VA', label: 'Virginia' },
+        { id: 'WV', label: 'West Virginia' }
+      ],
       selected: {
         theme: null,
         variable: null,
-        color: 'YlGnBu'
+        color: 'YlGnBu',
+        states: ['CT', 'DE', 'DC', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT', 'VA', 'WV']
       }
     }
   },
@@ -170,11 +214,6 @@ export default {
     },
     colorScale () {
       return d3.scaleSequential(d3[`interpolate${this.selected.color}`])
-      // return d3.scaleSequential(d3.interpolateViridis)
-      // return d3.scaleSequential(d3.interpolateYlGnBu)
-      // return d3.scaleSequential(d3.interpolateInferno)
-      // return d3.scaleSequential(d3.interpolateWarm)
-      // return d3.scaleSequential(d3.interpolateCool)
     }
   },
   created () {
@@ -191,6 +230,9 @@ export default {
       this.selected.color = color
       evt.$emit('map:render')
     },
+    selectStates (states) {
+      this.selected.states = states
+    },
     selectTheme (id) {
       this.loading = true
       this.$store.dispatch('selectThemeById', id)
@@ -200,8 +242,8 @@ export default {
           return Promise.resolve()
         })
         .then(() => {
-          // set default variable
           if (!this.selected.variable) {
+            // set default variable
             const variable = this.mapVariables.find(d => d.default)
             this.selectVariable(variable.id)
           } else {
