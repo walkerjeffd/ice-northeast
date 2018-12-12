@@ -9,18 +9,30 @@ Vue.use(Vuex)
 const xf = crossfilter()
 window.xf = xf
 
-let agg = {
+const agg = {
   dim: undefined,
   group: undefined,
   map: {}
 }
-// const weightSum = new Map()
+
+const dims = {}
 
 export function getGroupByKey (key) {
   return agg.map[key]
 }
 
-window.agg = agg
+export function addDim (key) {
+  dims[key] = xf.dimension(d => d[key])
+  return dims[key]
+}
+
+export function removeDim (key) {
+  dims[key].dispose()
+}
+
+export function getDim (key) {
+  return dims[key]
+}
 
 export const store = new Vuex.Store({
   state: {
@@ -76,32 +88,6 @@ export const store = new Vuex.Store({
           xf.add(data)
 
           agg.dim = xf.dimension(d => d[theme.group.by])
-
-          // const weightGroup = agg.dim.group().reduce(
-          //   (p, v) => {
-          //     p.count += 1
-          //     p.weight += v[theme.group.weight]
-          //     return p
-          //   },
-          //   (p, v) => {
-          //     p.count -= 1
-          //     p.weight -= v[theme.group.weight]
-          //     return p
-          //   },
-          //   () => {
-          //     return {
-          //       count: 0,
-          //       weight: 0
-          //     }
-          //   }
-          // )
-
-          // weightSum.clear()
-          // weightGroup.all().forEach(d => {
-          //   weightSum.set(d.key, d.value)
-          // })
-
-          // weightGroup.dispose()
 
           commit('SET_THEME', theme)
 

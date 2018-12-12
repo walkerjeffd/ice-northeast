@@ -149,7 +149,7 @@ import IceHeader from './components/IceHeader.vue'
 import IceMap from './components/IceMap.vue'
 import IceMapLayer from './components/IceMapLayer.vue'
 import SelectPicker from './components/SelectPicker.vue'
-import { getGroupByKey } from '@/store'
+import { getGroupByKey, addDim, getDim, removeDim } from '@/store'
 
 export default {
   name: 'app',
@@ -245,6 +245,7 @@ export default {
       .then(response => response.data)
       .then(config => this.$store.dispatch('loadConfig', config))
       .then(config => {
+        addDim('state')
         const theme = config.themes.find(d => d.default)
         return this.selectTheme(theme.id)
       })
@@ -256,14 +257,16 @@ export default {
     },
     selectStates (states) {
       this.selected.states = states
+      getDim('state').filterFunction(d => states.includes(d))
+      evt.$emit('map:render')
     },
     selectTransform (transform) {
-      console.log('selectTransform', transform)
       this.selected.transform = transform
       evt.$emit('map:render')
     },
     selectTheme (id) {
       this.loading = true
+      removeDim('state')
       this.$store.dispatch('selectThemeById', id)
         .then(() => {
           this.selected.theme = id
@@ -277,6 +280,11 @@ export default {
           } else {
             this.selectVariable(this.selected.variable)
           }
+          return Promise.resolve()
+        })
+        .then(() => {
+          addDim('state')
+          this.selectStates(this.selected.states)
           return Promise.resolve()
         })
         .then(() => {
@@ -300,10 +308,9 @@ export default {
       console.log('selectFeature', feature.id, getGroupByKey(feature.id))
     },
     getColor (feature) {
-      const group = getGroupByKey(feature.id)
-      const value = group ? group.mean : null
-      const scaled = this.variableScale(value)
-      const color = group ? this.colorScale(scaled) : '#EEEEEE'
+      const value = this.getValue(feature)
+      const scaled = value !== null ? this.variableScale(value) : null
+      const color = scaled !== null ? this.colorScale(scaled) : '#CCCCCC'
       return color
     },
     getValue (feature) {
