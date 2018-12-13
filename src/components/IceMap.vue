@@ -107,10 +107,6 @@ div.leaflet-top.leaflet-left {
   height: 30px !important;
 }
 
-svg {
-  border: 1px solid red;
-}
-
 path {
   fill: rgb(200,200,200);
   stroke: rgb(0, 0, 0);

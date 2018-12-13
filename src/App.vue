@@ -78,8 +78,24 @@
               />
             </div>
           </div>
+          <div class="row">
+            <div class="col-xs-12">
+              <ice-legend
+                id="main"
+                :color-scale="colorScale"
+                :variable-scale="variableScale"
+                :variable="variable"
+                :width="420"
+                :height="20" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 text-right">
+              <a href="#" @click.prevent="show.legendSettings = !show.legendSettings"><small>Color Settings</small></a>
+            </div>
+          </div>
         </div>
-        <div class="ice-box">
+        <div class="ice-box" v-if="show.legendSettings">
           <div class="row">
             <div class="col-xs-3">
               <div class="ice-box-label">Colors</div>
@@ -99,7 +115,7 @@
             </div>
           </div>
         </div>
-        <div class="ice-box">
+        <div class="ice-box" v-if="show.legendSettings">
           <div class="row">
             <div class="col-xs-3">
               <div class="ice-box-label">Transform</div>
@@ -148,6 +164,7 @@ import evt from './event-bus'
 import IceHeader from './components/IceHeader.vue'
 import IceMap from './components/IceMap.vue'
 import IceMapLayer from './components/IceMapLayer.vue'
+import IceLegend from './components/IceLegend.vue'
 import SelectPicker from './components/SelectPicker.vue'
 import { getGroupByKey, addDim, getDim, removeDim } from '@/store'
 
@@ -157,6 +174,7 @@ export default {
     IceHeader,
     IceMap,
     IceMapLayer,
+    IceLegend,
     SelectPicker
   },
   data () {
@@ -169,6 +187,9 @@ export default {
           maxZoom: 18,
           minZoom: 5
         }
+      },
+      show: {
+        legendSettings: false
       },
       colorOptions: [
         { id: 'YlGnBu', label: 'Yellow-Green-Blue' },
