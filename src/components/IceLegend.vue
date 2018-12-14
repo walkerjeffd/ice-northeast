@@ -6,49 +6,9 @@
 <script>
 import * as d3 from 'd3'
 
-// import colorMixin from '@/mixins/color';
-// import variableMixin from '@/mixins/variable';
-
 export default {
   name: 'map-legend',
-  // mixins: [colorMixin, variableMixin],
   props: ['id', 'colorScale', 'variableScale', 'variable', 'width', 'height'],
-  //   id: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   height: {
-  //     type: Number,
-  //     default: 20,
-  //     required: false,
-  //   },
-  //   maxWidth: {
-  //     type: Number,
-  //     required: false
-  //   },
-  //   margins: {
-  //     type: Object,
-  //     default() {
-  //       return {
-  //         left: 0,
-  //         right: 0,
-  //       };
-  //     },
-  //     required: false,
-  //   },
-  //   variable: {
-  //     type: Object,
-  //     required: true
-  //   },
-  //   data: {
-  //     type: Array,
-  //     required: true
-  //   },
-  //   show: {
-  //     type: Boolean,
-  //     required: true
-  //   }
-  // },
   data () {
     return {
       svg: null,
@@ -59,32 +19,20 @@ export default {
       axisHeight: 30
     }
   },
-  //   variableScale() {
-  //     return this.getVariableScale(this.variable, this.data);
-  //   },
-  //   colorScale() {
-  //     return this.getColorScale(this.variable);
-  //   }
-  // },
   mounted () {
     this.svg = d3.select(this.$el).append('svg')
     this.render()
-    // window.addEventListener('resize', this.render)
   },
   beforeDestroy () {
-    // window.removeEventListener('resize', this.render)
   },
   watch: {
     variable (variable) {
-      // console.log('legend:watch variable', variable)
       this.render()
     },
     colorScale () {
-      // console.log('legend:watch colorScale')
       this.render()
     },
     variableScale () {
-      // console.log('legend:watch variableScale')
       this.render()
     }
   },
@@ -93,20 +41,8 @@ export default {
       this.resize()
       this.clear()
       this.renderContinuous()
-
-      // switch (this.variable.scale.type) {
-      //   case 'continuous':
-      //     this.renderContinuous();
-      //     break;
-      //   case 'quantile':
-      //     this.renderQuantile();
-      //     break;
-      //   default:
-      //     console.log('ERROR: invalid variable scale type');
-      // }
     },
     renderContinuous () {
-      console.log('legend:renderContinuous')
       const defs = this.svg.append('defs')
 
       const linearGradient = defs.append('linearGradient')
@@ -142,7 +78,6 @@ export default {
       this.renderContinuousAxis()
     },
     renderContinuousAxis () {
-      console.log('legend:renderContinuousAxis')
       const axisScale = this.variableScale
         .copy()
         .rangeRound([0, +this.width - this.margins.left - this.margins.right])
@@ -193,10 +128,6 @@ export default {
 <style>
 .ice-legend {
   padding-top: 15px;
-}
-
-g.legend-axis.quantile path {
-  display: none;
 }
 
 g.legend-axis path {

@@ -68,7 +68,7 @@
               <select-picker
                 id="variable"
                 :config="{}"
-                :options="mapVariables"
+                :options="variableOptions"
                 :value="selected.variable"
                 :multiple="false"
                 @input="selectVariable"
@@ -136,12 +136,54 @@
           </div>
         </div>
       </div>
+      <div class="ice-right-sidebar">
+        <div class="ice-box">
+          <div class="ice-box-title">Histograms and Filters</div>
+          <select-picker
+            :config="{}"
+            :options="filterOptions"
+            :value="selected.filters"
+            :multiple="true"
+            @input="selectFilters"
+            value-field="id"
+            text-field="label"
+            title="Select variable(s)..."
+          />
+          <div class="ice-filter-legend">
+            <div>
+              <i class="fa fa-square" style="color:steelblue"></i>
+              All Catchments
+              <span class="pull-right" v-show="theme" style="display:none">{{ filteredCount }} of {{ counts.total }} filtered</span>
+            </div>
+          </div>
+          <div
+            class="ice-filter-container"
+            style="max-height:900px">
+            <ice-filter
+              v-for="variable in filterVariables"
+              :key="variable.id"
+              :variable="variable"
+              width="360"
+              @brush="brushed"
+              @destroy="destroyFilter"
+            />
+          </div>
+        </div>
+      </div>
+      <ice-info-box
+        :selected="selected.feature"
+        :get-label="getFeatureLabel"
+        @zoomTo="zoomToFeature"
+        @unselect="selectFeature"
+        v-if="selected.feature" />
       <ice-map :options="map.options">
         <ice-map-layer
           :layer="layer"
           :set-bounds="true"
           :get-color="getColor"
           :get-value="getValue"
+          :get-label="getFeatureLabel"
+          :selected="selected.feature"
           @click="selectFeature" />
       </ice-map>
       <div
@@ -165,8 +207,10 @@ import IceHeader from './components/IceHeader.vue'
 import IceMap from './components/IceMap.vue'
 import IceMapLayer from './components/IceMapLayer.vue'
 import IceLegend from './components/IceLegend.vue'
+import IceInfoBox from './components/IceInfoBox.vue'
+import IceFilter from './components/IceFilter.vue'
 import SelectPicker from './components/SelectPicker.vue'
-import { getGroupByKey, addDim, getDim, removeDim } from '@/store'
+import { getGroupByKey, addDim, getDim, removeDim, getFilteredCount } from '@/store'
 
 export default {
   name: 'app',
@@ -175,6 +219,8 @@ export default {
     IceMap,
     IceMapLayer,
     IceLegend,
+    IceInfoBox,
+    IceFilter,
     SelectPicker
   },
   data () {
@@ -223,14 +269,25 @@ export default {
         variable: null,
         color: 'YlGnBu',
         transform: 'linear',
-        states: ['CT', 'DE', 'DC', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT', 'VA', 'WV']
-      }
+        states: ['CT', 'DE', 'DC', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT', 'VA', 'WV'],
+        feature: null,
+        filters: []
+      },
+      filteredCount: 0
     }
   },
   computed: {
-    ...mapGetters(['themes', 'layer', 'variables', 'variable']),
-    mapVariables () {
+    ...mapGetters(['themes', 'theme', 'layer', 'variables', 'variable', 'counts']),
+    variableOptions () {
       return this.variables.filter(v => v.map)
+    },
+    filterOptions () {
+      return this.variables.filter(v => v.filter)
+    },
+    filterVariables () {
+      if (!this.variables) return []
+      return this.selected.filters
+        .map(id => this.variables.find(d => d.id === id))
     },
     variableScale () {
       if (!this.variable) return d3.scaleLinear()
@@ -270,8 +327,23 @@ export default {
         const theme = config.themes.find(d => d.default)
         return this.selectTheme(theme.id)
       })
+
+    evt.$on('filter', () => {
+      this.filteredCount = getFilteredCount()
+      // const count = getFilteredCount()
+      // this.$store.dispatch('setFilteredCount', count)
+      evt.$emit('map:render')
+    })
   },
   methods: {
+    brushed () {
+      evt.$emit('filter')
+    },
+    destroyFilter (id) {
+      console.log('destroyFilter', id)
+      const index = this.selected.filters.indexOf(id)
+      this.selected.filters.splice(index, 1)
+    },
     selectColor (color) {
       this.selected.color = color
       evt.$emit('map:render')
@@ -279,7 +351,7 @@ export default {
     selectStates (states) {
       this.selected.states = states
       getDim('state').filterFunction(d => states.includes(d))
-      evt.$emit('map:render')
+      evt.$emit('filter')
     },
     selectTransform (transform) {
       this.selected.transform = transform
@@ -296,7 +368,7 @@ export default {
         .then(() => {
           if (!this.selected.variable) {
             // set default variable
-            const variable = this.mapVariables.find(d => d.default)
+            const variable = this.variableOptions.find(d => d.default)
             this.selectVariable(variable.id)
           } else {
             this.selectVariable(this.selected.variable)
@@ -326,7 +398,23 @@ export default {
         })
     },
     selectFeature (feature) {
-      console.log('selectFeature', feature.id, getGroupByKey(feature.id))
+      if (this.selected.feature === feature) {
+        this.selected.feature = null
+      } else {
+        this.selected.feature = feature
+      }
+    },
+    selectFilters (filters) {
+      this.selected.filters = filters
+    },
+    zoomToFeature (feature) {
+      console.log('zoomToFeature', feature)
+    },
+    getFeatureLabel (feature) {
+      if (feature.properties && feature.properties.name) {
+        return `${feature.properties.name} (${feature.id})`
+      }
+      return feature.id
     },
     getColor (feature) {
       const value = this.getValue(feature)
@@ -386,12 +474,33 @@ a {
   box-shadow: 0px 0px 3px 0px #aaa;
 }
 
+.ice-box-title {
+  font-weight: bold;
+  font-size: 1.1em;
+  font-variant: small-caps;
+  margin-bottom: 5px;
+}
+
 .ice-box-label {
   font-weight: bold;
   font-size: 1.1em;
   font-variant: small-caps;
   text-align: right;
   margin-top: 5px
+}
+
+.ice-filter-legend {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.ice-filter-container {
+  max-height: 460px;
+  margin-top: 5px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .ice-loading {

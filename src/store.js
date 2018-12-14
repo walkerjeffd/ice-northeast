@@ -7,6 +7,10 @@ import * as crossfilter from 'crossfilter2'
 Vue.use(Vuex)
 
 const xf = crossfilter()
+
+// xf.onChange(() => {
+//   store.dispatch('setFilteredCount', xf.allFiltered().length)
+// })
 window.xf = xf
 
 const agg = {
@@ -34,11 +38,19 @@ export function getDim (key) {
   return dims[key]
 }
 
+export function getFilteredCount () {
+  return xf.allFiltered().length
+}
+
 export const store = new Vuex.Store({
   state: {
     config: null,
     theme: null,
-    variable: null
+    variable: null,
+    counts: {
+      filtered: 0,
+      total: 0
+    }
   },
   getters: {
     config: state => state.config,
@@ -46,7 +58,10 @@ export const store = new Vuex.Store({
     theme: state => state.theme,
     variables: state => (state.theme ? state.theme.variables : []),
     variable: state => state.variable,
-    layer: state => (state.theme ? state.theme.layer : undefined)
+    layer: state => (state.theme ? state.theme.layer : undefined),
+    counts: state => state.counts,
+    filteredCount: state => state.counts.filtered,
+    totalCount: state => state.counts.total
   },
   mutations: {
     SET_CONFIG (state, config) {
@@ -57,12 +72,21 @@ export const store = new Vuex.Store({
     },
     SET_VARIABLE (state, variable) {
       state.variable = variable
+    },
+    SET_FILTERED_COUNT (state, count) {
+      state.counts.filtered = count
+    },
+    SET_TOTAL_COUNT (state, count) {
+      state.counts.total = count
     }
   },
   actions: {
     loadConfig ({ commit }, config) {
       commit('SET_CONFIG', config)
       return Promise.resolve(config)
+    },
+    setFilteredCount ({ commit }, count) {
+      commit('SET_FILTERED_COUNT', count)
     },
     selectThemeById ({ commit, getters, dispatch }, id) {
       if (!getters.themes || getters.themes.length === 0 || !id) return
@@ -89,6 +113,8 @@ export const store = new Vuex.Store({
 
           agg.dim = xf.dimension(d => d[theme.group.by])
 
+          commit('SET_TOTAL_COUNT', xf.size())
+          commit('SET_FILTERED_COUNT', xf.allFiltered().length)
           commit('SET_THEME', theme)
 
           return theme

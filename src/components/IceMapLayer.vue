@@ -9,10 +9,10 @@ import evt from '@/event-bus'
 
 export default {
   name: 'IceMapLayer',
-  props: ['setBounds', 'layer', 'getColor', 'getValue'],
+  props: ['setBounds', 'layer', 'getColor', 'getValue', 'getLabel', 'selected'],
   mounted () {
     evt.$on('map:zoom', this.resize)
-    evt.$on('map:render', this.render)
+    evt.$on('map:render', this.renderFill)
 
     this.svg.call(this.tip)
   },
@@ -47,14 +47,18 @@ export default {
   watch: {
     variable () {
       this.tip.html(d => `
-        <strong>${this.theme.label} ID:</strong> ${d.id}<br>
-        <strong>${this.variable.label}:</strong> ${this.getValue(d) ? this.getValue(d).toFixed(2) : 'N/A'}
+        <strong>${this.getLabel(d)}</strong><br>
+        ${this.variable.label}: ${this.getValue(d) ? this.getValue(d).toFixed(2) : 'N/A'}
       `)
     },
     layer () {
       if (!this.layer) return
 
       return this.loadLayer(this.layer)
+    },
+    selected () {
+      this.renderSelected()
+      // this.render()
     }
   },
   methods: {
@@ -92,6 +96,7 @@ export default {
       if (!this.features || this.features.length === 0) return
 
       const tip = this.tip
+      const vm = this
 
       const paths = this.svg
         .select('g')
@@ -102,17 +107,29 @@ export default {
         .append('path')
         .style('cursor', 'pointer')
         .style('pointer-events', 'visible')
-        .on('click', (d) => (!this.$parent.disableClick && this.$emit('click', d)))
-        .on('mouseenter', function (d) {
+        .on('click', function (d) {
+          !vm.$parent.disableClick && vm.$emit('click', d)
           this.parentNode.appendChild(this) // move to front
+        })
+        .on('mouseenter', function (d) {
+          if (!vm.selected) {
+            // move to front if nothing selected
+            this.parentNode.appendChild(this)
+          } else {
+            // move to 2nd from front, behind selected
+            const lastChild = this.parentNode.lastChild
+            this.parentNode.insertBefore(this, lastChild)
+          }
+
           d3.select(this)
             .style('stroke', 'white')
             .style('stroke-width', '1')
+
           tip.show(d, this)
         })
         .on('mouseout', function (d) {
           d3.select(this)
-            .style('stroke', null)
+            .style('stroke', vm.isSelected(d) ? 'red' : null)
             .style('stroke-width', null)
           tip.hide(d, this)
         })
@@ -121,6 +138,21 @@ export default {
         .style('fill', this.getColor)
 
       paths.exit().remove()
+    },
+    renderFill () {
+      this.svg
+        .select('g')
+        .selectAll('path')
+        .style('fill', this.getColor)
+    },
+    renderSelected () {
+      this.svg
+        .select('g')
+        .selectAll('path')
+        .style('stroke', d => this.isSelected(d) ? 'red' : null)
+    },
+    isSelected (feature) {
+      return !!this.selected && this.selected.id === feature.id
     }
   },
   render: function (h) {

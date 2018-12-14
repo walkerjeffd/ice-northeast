@@ -21,13 +21,15 @@
         {
           "id": "area_km2",
           "label": "Area (km2)",
-          "map": false
+          "map": false,
+          "filter": false
         },
         {
           "default": true,
           "id": "elevation",
           "label": "Elevation",
           "map": true,
+          "filter": true,
           "scale": {
             "domain": [0, 600],
             "transform": "linear"
@@ -37,6 +39,7 @@
           "id": "forest",
           "label": "Forest Cover",
           "map": true,
+          "filter": true,
           "scale": {
             "domain": [0, 100],
             "transform": "linear"
@@ -66,12 +69,14 @@
         {
           "id": "area_km2",
           "label": "Area (km2)",
-          "map": false
+          "map": false,
+          "filter": false
         },
         {
           "id": "elevation",
           "label": "Elevation",
           "map": true,
+          "filter": true,
           "scale": {
             "domain": [0, 500],
             "transform": "linear"
@@ -82,6 +87,7 @@
           "id": "forest",
           "label": "Forest Cover",
           "map": true,
+          "filter": true,
           "scale": {
             "domain": [0, 100],
             "transform": "linear"
