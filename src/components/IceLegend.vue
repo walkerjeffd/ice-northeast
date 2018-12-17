@@ -6,8 +6,11 @@
 <script>
 import * as d3 from 'd3'
 
+import variableMixin from '@/mixins/variable'
+
 export default {
   name: 'map-legend',
+  mixins: [variableMixin],
   props: ['id', 'colorScale', 'variableScale', 'variable', 'width', 'height'],
   data () {
     return {
@@ -82,7 +85,7 @@ export default {
         .copy()
         .rangeRound([0, +this.width - this.margins.left - this.margins.right])
       // const axisFormatter = d3.format(this.variable ? this.variable.formats.axis : ',.1f')
-      const axisFormatter = d3.format(',.1f')
+      const axisFormatter = this.axisFormat
       const axis = d3.axisBottom(axisScale)
 
       axis.ticks(8, axisFormatter)

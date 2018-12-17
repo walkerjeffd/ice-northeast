@@ -22,27 +22,39 @@
           "id": "area_km2",
           "label": "Area (km2)",
           "map": false,
-          "filter": false
+          "filter": false,
+          "formats": {
+            "axis": ".0f",
+            "value": ".1f"
+          }
         },
         {
           "default": true,
           "id": "elevation",
-          "label": "Elevation",
+          "label": "Elevation (m)",
           "map": true,
           "filter": true,
           "scale": {
             "domain": [0, 600],
             "transform": "linear"
+          },
+          "formats": {
+            "axis": ".0f",
+            "value": ".1f"
           }
         },
         {
           "id": "forest",
-          "label": "Forest Cover",
+          "label": "Forest Cover (%)",
           "map": true,
           "filter": true,
           "scale": {
             "domain": [0, 100],
             "transform": "linear"
+          },
+          "formats": {
+            "axis": ".0f",
+            "value": ".1f"
           }
         }
       ]
@@ -70,27 +82,39 @@
           "id": "area_km2",
           "label": "Area (km2)",
           "map": false,
-          "filter": false
+          "filter": false,
+          "formats": {
+            "axis": ".0f",
+            "value": ".1f"
+          }
         },
         {
           "id": "elevation",
-          "label": "Elevation",
+          "label": "Elevation (m)",
           "map": true,
           "filter": true,
           "scale": {
             "domain": [0, 500],
             "transform": "linear"
+          },
+          "formats": {
+            "axis": ".0f",
+            "value": ".1f"
           }
         },
         {
           "default": true,
           "id": "forest",
-          "label": "Forest Cover",
+          "label": "Forest Cover (%)",
           "map": true,
           "filter": true,
           "scale": {
             "domain": [0, 100],
             "transform": "linear"
+          },
+          "formats": {
+            "axis": ".0f",
+            "value": ".1f"
           }
         }
       ]

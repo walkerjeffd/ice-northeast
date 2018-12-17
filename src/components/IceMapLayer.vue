@@ -6,10 +6,12 @@ import d3Tip from 'd3-tip'
 import * as topojson from 'topojson-client'
 
 import evt from '@/event-bus'
+import variableMixin from '@/mixins/variable'
 
 export default {
   name: 'IceMapLayer',
   props: ['setBounds', 'layer', 'getColor', 'getValue', 'getLabel', 'selected'],
+  mixins: [variableMixin],
   mounted () {
     evt.$on('map:zoom', this.resize)
     evt.$on('map:render', this.renderFill)
@@ -48,7 +50,7 @@ export default {
     variable () {
       this.tip.html(d => `
         <strong>${this.getLabel(d)}</strong><br>
-        ${this.variable.label}: ${this.getValue(d) ? this.getValue(d).toFixed(2) : 'N/A'}
+        ${this.variable.label}: ${this.getValue(d) ? this.valueFormat(this.getValue(d)) : 'N/A'}
       `)
     },
     layer () {

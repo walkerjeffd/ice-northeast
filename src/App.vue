@@ -114,9 +114,7 @@
               />
             </div>
           </div>
-        </div>
-        <div class="ice-box" v-if="show.legendSettings">
-          <div class="row">
+          <div class="row" style="margin-top:10px">
             <div class="col-xs-3">
               <div class="ice-box-label">Transform</div>
             </div>
@@ -153,7 +151,7 @@
             <div>
               <i class="fa fa-square" style="color:steelblue"></i>
               All Catchments
-              <span class="pull-right" v-show="theme" style="display:none">{{ filteredCount }} of {{ counts.total }} filtered</span>
+              <span class="pull-right" v-show="theme" style="display:none">{{ filteredCount.toLocaleString() }} of {{ counts.total.toLocaleString() }} filtered</span>
             </div>
           </div>
           <div
