@@ -101,7 +101,7 @@ export default {
       const paths = this.svg
         .select('g')
         .selectAll('path')
-        .data(this.features, d => d.id)
+        .data(this.features, d => `${this.theme.id}-${d.id}`)
 
       paths.enter()
         .append('path')
@@ -144,6 +144,7 @@ export default {
         .select('g')
         .selectAll('path')
         .style('fill', this.getColor)
+        // .style('display', d => this.getValue(d) === null ? 'none' : null)
     },
     renderSelected () {
       this.svg

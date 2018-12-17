@@ -49,7 +49,7 @@ export default {
 
     const svg = d3.select(this.map.getPanes().overlayPane).append('svg')
     svg.append('g').attr('class', 'leaflet-zoom-hide')
-
+window.map = this.map;
     let moveTimeout
     this.map.on('movestart', () => {
       window.clearTimeout(moveTimeout)

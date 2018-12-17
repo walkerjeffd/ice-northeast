@@ -105,13 +105,17 @@ export const store = new Vuex.Store({
             return d
           })
 
-          if (agg.group) agg.group.dispose()
-          if (agg.dim) agg.dim.dispose()
+          if (theme.group) {
+            if (agg.group) agg.group.dispose()
+            if (agg.dim) agg.dim.dispose()
+          }
 
           xf.remove()
           xf.add(data)
 
-          agg.dim = xf.dimension(d => d[theme.group.by])
+          if (theme.group) {
+            agg.dim = xf.dimension(d => d[theme.group.by])
+          }
 
           commit('SET_TOTAL_COUNT', xf.size())
           commit('SET_FILTERED_COUNT', xf.allFiltered().length)
@@ -132,30 +136,58 @@ export const store = new Vuex.Store({
       agg.map = {}
 
       if (agg.group) agg.group.dispose()
-      agg.group = agg.dim.group().reduce(
-        (p, v) => {
-          p.count += 1
-          p.sum += v[variable.id] * v[theme.group.weight]
-          p.wsum += v[theme.group.weight]
-          p.mean = p.count >= 1 ? p.sum / p.wsum : null
-          return p
-        },
-        (p, v) => {
-          p.count -= 1
-          p.sum -= v[variable.id] * v[theme.group.weight]
-          p.wsum -= v[theme.group.weight]
-          p.mean = p.count >= 1 ? p.sum / p.wsum : null
-          return p
-        },
-        () => {
-          return {
-            count: 0,
-            sum: 0,
-            wsum: 0,
-            mean: null
+
+      if (typeof theme.group.weight === 'string') {
+        agg.group = agg.dim.group().reduce(
+          (p, v) => {
+            p.count += 1
+            p.sum += v[variable.id] * v[theme.group.weight]
+            p.wsum += v[theme.group.weight]
+            p.mean = p.count >= 1 ? p.sum / p.wsum : null
+            return p
+          },
+          (p, v) => {
+            p.count -= 1
+            p.sum -= v[variable.id] * v[theme.group.weight]
+            p.wsum -= v[theme.group.weight]
+            p.mean = p.count >= 1 ? p.sum / p.wsum : null
+            return p
+          },
+          () => {
+            return {
+              count: 0,
+              sum: 0,
+              wsum: 0,
+              mean: null
+            }
           }
-        }
-      )
+        )
+      } else if (typeof theme.group.weight === 'number') {
+        agg.group = agg.dim.group().reduce(
+          (p, v) => {
+            p.count += 1
+            p.sum += v[variable.id] * theme.group.weight
+            p.wsum += theme.group.weight
+            p.mean = p.count >= 1 ? p.sum / p.wsum : null
+            return p
+          },
+          (p, v) => {
+            p.count -= 1
+            p.sum -= v[variable.id] * theme.group.weight
+            p.wsum -= theme.group.weight
+            p.mean = p.count >= 1 ? p.sum / p.wsum : null
+            return p
+          },
+          () => {
+            return {
+              count: 0,
+              sum: 0,
+              wsum: 0,
+              mean: null
+            }
+          }
+        )
+      }
 
       agg.group.all().forEach(d => {
         agg.map[d.key] = d.value // d is a reference, automatically updates after filtering
