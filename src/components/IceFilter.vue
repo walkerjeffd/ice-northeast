@@ -72,9 +72,23 @@ export default {
 
     this.yScale = d3.scaleLinear().range([100, 0])
 
-    this.dim = xf.dimension(d => d[this.variable.id])
+    this.all = {
+      dim: xf.all.dimension(d => d[this.variable.id])
+    }
+    this.all.group = this.all.dim
+      .group((d) => {
+        if (d >= this.variable.scale.domain[1]) {
+          return this.variable.scale.domain[1] - interval
+        } else if (d < this.variable.scale.domain[0]) {
+          return this.variable.scale.domain[0]
+        }
+        return Math.floor(d / interval) * interval
+      })
 
-    this.group = this.dim
+    this.subset = {
+      dim: xf.subset.dimension(d => d[this.variable.id])
+    }
+    this.subset.group = this.subset.dim
       .group((d) => {
         if (d >= this.variable.scale.domain[1]) {
           return this.variable.scale.domain[1] - interval
@@ -85,8 +99,8 @@ export default {
       })
 
     this.extent = [
-      this.dim.bottom(1)[0][this.variable.id],
-      this.dim.top(1)[0][this.variable.id]
+      this.all.dim.bottom(1)[0][this.variable.id],
+      this.all.dim.top(1)[0][this.variable.id]
     ]
   },
   mounted () {
@@ -105,11 +119,15 @@ export default {
       .attr('width', this.width)
       .attr('height', this.height)
 
-    g.selectAll('.bar')
+    g.selectAll('.bar.all')
       .data(['background', 'foreground'])
       .enter().append('path')
-      .attr('class', d => `${d} bar`)
-      .datum(this.group.all())
+      .attr('class', d => `${d} bar all`)
+
+    g.selectAll('.bar.subset')
+      .data(['background', 'foreground'])
+      .enter().append('path')
+      .attr('class', d => `${d} bar subset`)
 
     g.selectAll('.foreground.bar')
       .attr('clip-path', `url(#clip-${this.variable.id})`)
@@ -178,7 +196,8 @@ export default {
     const setFilterRange = throttle(100, (s) => {
       // console.log(`filter(${vm.variable.id}):setFilterRange`, s)
       if (s === null) {
-        this.dim.filterAll()
+        this.all.dim.filterAll()
+        this.subset.dim.filterAll()
         this.range = null
       } else {
         const extent = s.map(this.xScale.invert)
@@ -195,22 +214,28 @@ export default {
 
         this.range = extent
 
-        this.dim.filterRange(extent)
+        this.all.dim.filterRange(extent)
+        this.subset.dim.filterRange(extent)
       }
 
-      evt.$emit('filter')
+      evt.$emit('filter:render')
     })
 
-    evt.$on('filter', this.render)
+    evt.$on('filter:render', this.render)
+    evt.$on('filter:clearSubset', this.clearSubset)
+
     this.render()
   },
   beforeDestroy () {
-    evt.$off('filter', this.render)
-    this.group.dispose()
-    this.dim.filterAll()
-    this.dim.dispose()
+    evt.$off('filter:render', this.render)
+    this.all.group.dispose()
+    this.all.dim.filterAll()
+    this.all.dim.dispose()
+    this.subset.group.dispose()
+    this.subset.dim.filterAll()
+    this.subset.dim.dispose()
     this.svg.select('g').remove()
-    this.$emit('filter')
+    evt.$emit('filter:render')
   },
   methods: {
     barPath (groups) {
@@ -226,27 +251,41 @@ export default {
     },
     render () {
       // console.log(`filter(${this.variable.id}):render`)
-      this.yScale.domain([0, this.group.top(1)[0].value])
-      this.svg.select('g').selectAll('.bar').attr('d', this.barPath)
+      const g = this.svg.select('g')
+
+      this.yScale.domain([0, this.all.group.top(1)[0].value])
+      g.selectAll('.bar.all')
+        .datum(this.all.group.all())
+        .attr('d', this.barPath)
+
+      if (xf.subset.size() > 0) {
+        this.yScale.domain([0, this.subset.group.top(1)[0].value])
+        g.selectAll('.bar.subset')
+          .datum(this.subset.group.all())
+          .attr('d', this.barPath)
+      } else {
+        g.selectAll('.bar.subset')
+          .datum([])
+          .attr('d', this.barPath)
+      }
     },
     reset () {
       // console.log(`filter(${this.variable.id}):reset`)
       const gBrush = this.svg.select('g.brush')
       gBrush.call(this.brush.move, null)
-      this.dim.filterAll()
+      this.all.dim.filterAll()
+      this.subset.dim.filterAll()
       this.range = null
-      evt.$emit('filter')
+      evt.$emit('filter:render')
     },
     destroy () {
       // console.log(`filter(${this.variable.id}):destroy`)
       this.$emit('destroy', this.variable.id)
+    },
+    clearSubset () {
+      this.subset.dim.filterAll()
+      xf.subset.remove()
     }
-  },
-  destroyed () {
-    // evt.$off('filter', this.render)
-    // this.group.dispose()
-    // this.dim.filterAll().dispose()
-    // this.$emit('filter')
   }
 }
 </script>
@@ -280,14 +319,26 @@ export default {
   color: #ccc;
 }
 
-.background.bar {
-  fill: #aaa;
+.bar {
   stroke: none;
 }
 
-.foreground.bar {
+.background.bar {
+  fill: #999;
+}
+
+.background.bar.subset {
+  fill: #AAA;
+  opacity: 0.6;
+}
+
+.foreground.bar.all {
   fill: steelblue;
-  stroke: none;
+}
+
+.foreground.bar.subset {
+  fill: orangered;
+  opacity: 0.6;
 }
 
 .axis path, .axis line {

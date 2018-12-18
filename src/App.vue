@@ -219,7 +219,7 @@ import IceInfoBox from './components/IceInfoBox.vue'
 import IceFilter from './components/IceFilter.vue'
 import SelectPicker from './components/SelectPicker.vue'
 // import { getGroupByKey, addDim, getDim, removeDim, getData, isFiltered, getFilteredCount } from '@/store'
-import { xf, getGroupByKey, getData, isFiltered, getFilteredCount } from '@/store'
+import { xf, getGroupByKey, isFiltered, getFilteredCount } from '@/store'
 
 export default {
   name: 'app',
@@ -347,10 +347,10 @@ export default {
         return this.selectTheme(theme.id)
       })
 
-    evt.$on('filter', this.onFilter)
+    evt.$on('filter:render', this.onFilter)
   },
   beforeDestroy () {
-    evt.$off('filter', this.onFilter)
+    evt.$off('filter:render', this.onFilter)
   },
   methods: {
     onFilter () {
@@ -371,7 +371,7 @@ export default {
       if (this.regionFilter.dim) {
         this.regionFilter.dim.filterFunction(d => regions.includes(d))
       }
-      evt.$emit('filter')
+      evt.$emit('filter:render')
     },
     selectTransform (transform) {
       this.transform.selected = transform
@@ -399,7 +399,7 @@ export default {
           return Promise.resolve()
         })
         .then(() => {
-          this.regionFilter.dim = xf.dimension(d => d.state)
+          this.regionFilter.dim = xf.all.dimension(d => d.state)
           this.selectRegions(this.regionFilter.selected)
           return Promise.resolve()
         })
@@ -421,9 +421,7 @@ export default {
         })
     },
     selectFeature (feature) {
-      this.catchments.layer = null
-      this.catchments.map.clear()
-      this.selectCatchment()
+      this.clearCatchments()
 
       if (!feature || this.selected.feature === feature) {
         this.selected.feature = null
@@ -431,6 +429,7 @@ export default {
         this.selected.feature = feature
       }
       evt.$emit('map:render')
+      evt.$emit('filter:render')
     },
     selectFilters (filters) {
       this.selected.filters = filters
@@ -465,7 +464,7 @@ export default {
         type: 'geojson',
         url: `${this.theme.id}/${feature.id}.json`
       }
-      const data = getData()
+      const data = xf.all.all()
         .map((d, i) => ({
           $index: i,
           ...d
@@ -478,7 +477,11 @@ export default {
         this.catchments.map.set(d.id, d)
       })
 
+      xf.subset.remove()
+      xf.subset.add(data)
+
       evt.$emit('map:render')
+      evt.$emit('filter:render')
     },
     getCatchmentValue (catchment) {
       const row = this.catchments.map.get(catchment.id)
@@ -502,6 +505,12 @@ export default {
       }
 
       evt.$emit('map:render')
+    },
+    clearCatchments () {
+      this.catchments.layer = null
+      this.catchments.map.clear()
+      this.selectCatchment()
+      evt.$emit('filter:clearSubset')
     }
   }
 }

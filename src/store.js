@@ -6,7 +6,11 @@ import * as crossfilter from 'crossfilter2'
 
 Vue.use(Vuex)
 
-export const xf = crossfilter()
+export const xf = {
+  all: crossfilter(),
+  subset: crossfilter()
+}
+
 window.xf = xf
 
 const agg = {
@@ -15,48 +19,16 @@ const agg = {
   map: {}
 }
 
-// const dims = {}
-
-// export function getCrossfilter () {
-//   return xf
-// }
-
 export function getGroupByKey (key) {
   return agg.map[key]
 }
 
-// export function addDim (key) {
-//   dims[key] = xf.dimension(d => d[key])
-//   return dims[key]
-// }
-
-// export function getDim (key) {
-//   return dims[key]
-// }
-
-// export function removeDim (key) {
-//   const dim = dims[key]
-//   if (dim) {
-//     dim.filterAll()
-//     dim.dispose()
-//     delete dims[key]
-//   }
-// }
-
-// export function hasDim (key) {
-//   return key in dims
-// }
-
-export function getData () {
-  return xf.all()
-}
-
 export function isFiltered (index) {
-  return xf.isElementFiltered(index)
+  return xf.all.isElementFiltered(index)
 }
 
 export function getFilteredCount () {
-  return xf.allFiltered().length
+  return xf.all.allFiltered().length
 }
 
 export const store = new Vuex.Store({
@@ -118,11 +90,11 @@ export const store = new Vuex.Store({
             if (agg.dim) agg.dim.dispose()
           }
 
-          xf.remove()
-          xf.add(data)
+          xf.all.remove()
+          xf.all.add(data)
 
           if (theme.group) {
-            agg.dim = xf.dimension(d => d[theme.group.by])
+            agg.dim = xf.all.dimension(d => d[theme.group.by])
           }
 
           commit('SET_STATS_COUNT', data.length)
@@ -200,7 +172,7 @@ export const store = new Vuex.Store({
         agg.map[d.key] = d.value // d is a reference, automatically updates after filtering
       })
 
-      variable.extent = d3.extent(xf.all().map(d => d[variable.id]))
+      variable.extent = d3.extent(xf.all.all().map(d => d[variable.id]))
 
       commit('SET_VARIABLE', variable)
 

@@ -70,7 +70,7 @@ export default {
     this.ready = true
   },
   beforeDestroy () {
-    evt.$off('map:zoomTo', this.zoomTo)
+    evt.$on('map:zoomTo', this.zoomTo)
   },
   computed: {
     svg () {
