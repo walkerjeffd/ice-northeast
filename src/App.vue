@@ -184,8 +184,8 @@
           :selected="selected.feature"
           @click="selectFeature" />
         <ice-map-layer
-          v-if="catchmentsLayer"
-          :layer="catchmentsLayer"
+          v-if="catchments.layer"
+          :layer="catchments.layer"
           :set-bounds="false"
           :get-fill="getCatchmentFill"
           :get-value="getCatchmentValue"
@@ -217,7 +217,7 @@ import IceLegend from './components/IceLegend.vue'
 import IceInfoBox from './components/IceInfoBox.vue'
 import IceFilter from './components/IceFilter.vue'
 import SelectPicker from './components/SelectPicker.vue'
-import { getGroupByKey, addDim, getDim, removeDim, hasDim, getFilteredCount } from '@/store'
+import { getGroupByKey, addDim, getDim, removeDim, getData, getFilteredCount } from '@/store'
 
 export default {
   name: 'app',
@@ -281,7 +281,10 @@ export default {
         filters: []
       },
       filteredCount: 0,
-      catchmentsLayer: null
+      catchments: {
+        layer: null,
+        data: []
+      }
     }
   },
   computed: {
@@ -401,7 +404,7 @@ export default {
         })
     },
     selectFeature (feature) {
-      this.catchmentsLayer = null
+      this.catchments.layer = null
       if (!feature || this.selected.feature === feature) {
         this.selected.feature = null
       } else {
@@ -433,17 +436,24 @@ export default {
     },
     showCatchments (feature) {
       console.log('showCatchments()', feature)
-      this.catchmentsLayer = {
+      this.catchments.layer = {
         geometry: 'polygon',
         type: 'geojson',
         url: `${this.theme.id}/${feature.id}.json`
       }
+      const data = getData()
+        .filter(d => d[this.theme.group.by] === feature.id)
+      this.catchments.data = Object.freeze(data)
     },
     getCatchmentValue (d) {
-      return 1
+      const row = this.catchments.data.find(row => row.id === d.id)
+      return row ? row[this.variable.id] : null
     },
     getCatchmentFill (d) {
-      return '#AAAAAA'
+      const value = this.getCatchmentValue(d)
+      const scaled = value !== null ? this.variableScale(value) : null
+      const color = scaled !== null ? this.colorScale(scaled) : 'none'
+      return color
     },
     getCatchmentLabel (d) {
       return `Catchment: ${d.id}`

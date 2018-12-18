@@ -33,7 +33,7 @@ import * as d3 from 'd3'
 import { throttle } from 'throttle-debounce'
 
 import evt from '@/event-bus'
-import { getData, addDim, removeDim, getDim } from '@/store'
+import { getData, addDim, removeDim } from '@/store'
 import variableMixin from '@/mixins/variable'
 
 export default {
