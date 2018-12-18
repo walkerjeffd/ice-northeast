@@ -41,20 +41,14 @@ export default {
   mixins: [variableMixin],
   data () {
     return {
-      svg: null,
       chart: null,
-      dim: null,
-      group: null,
       range: null,
       meanValue: null,
       margin: {
-        top: 10, right: 10, bottom: 20, left: 10
+        top: 10, right: 20, bottom: 20, left: 20
       },
       height: 100,
-      brush: null,
-      handle: null,
-      yScale: d3.scaleLinear().range([100, 0]),
-      fullExtent: [-Infinity, Infinity]
+      extent: [-Infinity, Infinity]
     }
   },
   computed: {
@@ -72,12 +66,10 @@ export default {
   filters: {
     textFormat: (value, format) => d3.format(format)(value)
   },
-  mounted () {
-    // console.log(`filter(${this.variable.id}):mounted`)
+  created () {
     const interval = (this.variable.scale.domain[1] - this.variable.scale.domain[0]) / 40
 
-    this.fullExtent = d3.extent(getData(), d => d[this.variable.id])
-
+    this.yScale = d3.scaleLinear().range([100, 0])
     this.dim = addDim(this.variable.id)
 
     this.group = this.dim
@@ -89,6 +81,14 @@ export default {
         }
         return Math.floor(d / interval) * interval
       })
+
+    this.extent = [
+      this.dim.bottom(1)[0][this.variable.id],
+      this.dim.top(1)[0][this.variable.id]
+    ]
+  },
+  mounted () {
+    // console.log(`filter(${this.variable.id}):mounted`)
 
     this.svg = d3.select(this.$el).select('.chart').append('svg')
       .attr('width', (+this.width) + this.margin.left + this.margin.right)
@@ -116,6 +116,23 @@ export default {
       .attr('class', 'axis')
       .attr('transform', `translate(0,${this.height})`)
       .call(this.axis)
+
+    if (this.extent[0] < this.xScale.domain()[0]) {
+      const tick = this.svg.select('g.tick text')
+      if (tick.datum() === this.xScale.domain()[0]) {
+        tick.text(`< ${tick.text()}`)
+      }
+    }
+    if (this.extent[1] > this.xScale.domain()[1]) {
+      const ticks = this.svg.selectAll('g.tick text')
+        .filter(function () { // eslint-disable-line func-names
+          return d3.select(this).text() !== ''
+        })
+      const tick = d3.select(ticks.nodes()[ticks.size() - 1])
+      if (tick.datum() === this.xScale.domain()[1]) {
+        tick.text(`> ${tick.text()}`)
+      }
+    }
 
     this.brush = d3.brushX()
       .extent([[0, 0], [this.width, this.height]])
@@ -164,8 +181,12 @@ export default {
       } else {
         const extent = s.map(this.xScale.invert)
 
+        if (extent[0] === this.xScale.domain()[0]) {
+          extent[0] = this.extent[0]
+        }
+
         if (extent[1] === this.xScale.domain()[1]) {
-          extent[1] = this.fullExtent[1]
+          extent[1] = this.extent[1]
         } else {
           extent[1] = extent[1] * 1.0000001
         }

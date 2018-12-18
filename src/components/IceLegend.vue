@@ -81,6 +81,8 @@ export default {
       this.renderContinuousAxis()
     },
     renderContinuousAxis () {
+      if (!this.variable) return
+
       const axisScale = this.variableScale
         .copy()
         .rangeRound([0, +this.width - this.margins.left - this.margins.right])
@@ -92,24 +94,22 @@ export default {
       this.svg.select('g.legend-axis')
         .call(axis)
 
-      // if (this.variableScale.clamp() && this.variable.scale.transform) {
-      //   if (this.variable.scale.transform.min) {
-      //     const tick = this.svg.select('g.tick text')
-      //     if (tick.datum() === this.variable.scale.transform.min) {
-      //       tick.text(`< ${tick.text()}`)
-      //     }
-      //   }
-      //   if (this.variable.scale.transform.max) {
-      //     const ticks = this.svg.selectAll('g.tick text')
-      //       .filter(function () { // eslint-disable-line func-names
-      //         return d3.select(this).text() !== ''
-      //       })
-      //     const tick = d3.select(ticks.nodes()[ticks.size() - 1])
-      //     if (tick.datum() === this.variable.scale.transform.max) {
-      //       tick.text(`> ${tick.text()}`)
-      //     }
-      //   }
-      // }
+      if (this.variable.extent[0] < axisScale.domain()[0]) {
+        const tick = this.svg.select('g.tick text')
+        if (tick.datum() === axisScale.domain()[0]) {
+          tick.text(`< ${tick.text()}`)
+        }
+      }
+      if (this.variable.extent[1] > axisScale.domain()[1]) {
+        const ticks = this.svg.selectAll('g.tick text')
+          .filter(function () { // eslint-disable-line func-names
+            return d3.select(this).text() !== ''
+          })
+        const tick = d3.select(ticks.nodes()[ticks.size() - 1])
+        if (tick.datum() === axisScale.domain()[1]) {
+          tick.text(`> ${tick.text()}`)
+        }
+      }
     },
     resize () {
       const width = this.width

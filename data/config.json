@@ -36,7 +36,7 @@
           "map": true,
           "filter": true,
           "scale": {
-            "domain": [0, 600],
+            "domain": [0, 800],
             "transform": "linear"
           },
           "formats": {
@@ -94,7 +94,7 @@
           "map": true,
           "filter": true,
           "scale": {
-            "domain": [0, 500],
+            "domain": [0, 800],
             "transform": "linear"
           },
           "formats": {
