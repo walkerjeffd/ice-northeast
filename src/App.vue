@@ -172,6 +172,7 @@
         :get-label="getFeatureLabel"
         @zoomTo="zoomToFeature"
         @unselect="selectFeature"
+        @showCatchments="showCatchments"
         v-if="selected.feature" />
       <ice-map :options="map.options">
         <ice-map-layer
@@ -182,6 +183,15 @@
           :get-label="getFeatureLabel"
           :selected="selected.feature"
           @click="selectFeature" />
+        <ice-map-layer
+          v-if="catchmentsLayer"
+          :layer="catchmentsLayer"
+          :set-bounds="false"
+          :get-fill="getCatchmentFill"
+          :get-value="getCatchmentValue"
+          :get-label="getCatchmentLabel"
+          :selected="selected.catchment"
+          @click="selectCatchment" />
       </ice-map>
       <div
         class="ice-loading"
@@ -207,7 +217,7 @@ import IceLegend from './components/IceLegend.vue'
 import IceInfoBox from './components/IceInfoBox.vue'
 import IceFilter from './components/IceFilter.vue'
 import SelectPicker from './components/SelectPicker.vue'
-import { getGroupByKey, addDim, getDim, removeDim, getFilteredCount } from '@/store'
+import { getGroupByKey, addDim, getDim, removeDim, hasDim, getFilteredCount } from '@/store'
 
 export default {
   name: 'app',
@@ -270,7 +280,8 @@ export default {
         feature: null,
         filters: []
       },
-      filteredCount: 0
+      filteredCount: 0,
+      catchmentsLayer: null
     }
   },
   computed: {
@@ -320,7 +331,6 @@ export default {
       .then(response => response.data)
       .then(config => this.$store.dispatch('loadConfig', config))
       .then(config => {
-        addDim('state')
         const theme = config.themes.find(d => d.default)
         return this.selectTheme(theme.id)
       })
@@ -342,7 +352,8 @@ export default {
     },
     selectStates (states) {
       this.selected.states = states
-      getDim('state').filterFunction(d => states.includes(d))
+      const dim = getDim('state')
+      if (dim) dim.filterFunction(d => states.includes(d))
       evt.$emit('filter')
     },
     selectTransform (transform) {
@@ -390,7 +401,8 @@ export default {
         })
     },
     selectFeature (feature) {
-      if (this.selected.feature === feature) {
+      this.catchmentsLayer = null
+      if (!feature || this.selected.feature === feature) {
         this.selected.feature = null
       } else {
         this.selected.feature = feature
@@ -400,13 +412,14 @@ export default {
       this.selected.filters = filters
     },
     zoomToFeature (feature) {
-      console.log('zoomToFeature', feature)
+      evt.$emit('map:zoomTo', feature)
     },
     getFeatureLabel (feature) {
+      let label = feature.id
       if (feature.properties && feature.properties.name) {
-        return `${feature.properties.name} (${feature.id})`
+        label = `${feature.properties.name} (${feature.id})`
       }
-      return feature.id
+      return `${this.theme.label}: ${label}`
     },
     getFill (feature) {
       const value = this.getValue(feature)
@@ -417,13 +430,32 @@ export default {
     getValue (feature) {
       const group = getGroupByKey(feature.id)
       return group ? group.mean : null
+    },
+    showCatchments (feature) {
+      console.log('showCatchments()', feature)
+      this.catchmentsLayer = {
+        geometry: 'polygon',
+        type: 'geojson',
+        url: `${this.theme.id}/${feature.id}.json`
+      }
+    },
+    getCatchmentValue (d) {
+      return 1
+    },
+    getCatchmentFill (d) {
+      return '#AAAAAA'
+    },
+    getCatchmentLabel (d) {
+      return `Catchment: ${d.id}`
+    },
+    selectCatchment (d) {
+      console.log('selectCatchment', d)
     }
   }
 }
 </script>
 
 <style>
-
 body {
   padding: 0px;
   margin: 0px;

@@ -2,8 +2,8 @@
 import { mapGetters } from 'vuex'
 import axios from 'axios'
 import * as d3 from 'd3'
-import d3Tip from 'd3-tip'
 import * as topojson from 'topojson-client'
+import d3Tip from 'd3-tip'
 
 import evt from '@/event-bus'
 import variableMixin from '@/mixins/variable'
@@ -12,24 +12,16 @@ export default {
   name: 'IceMapLayer',
   props: ['setBounds', 'layer', 'getFill', 'getValue', 'getLabel', 'selected'],
   mixins: [variableMixin],
-  mounted () {
-    evt.$on('map:zoom', this.resize)
-    evt.$on('map:render', this.renderFill)
-
-    this.svg.call(this.tip)
-  },
   data () {
     return {
-      layerData: null,
+      data: null,
+      g: null,
       tip: d3Tip()
         .attr('class', 'd3-tip')
     }
   },
   computed: {
     ...mapGetters(['theme', 'variable']),
-    features () {
-      return this.layerData ? this.layerData.features : []
-    },
     path () {
       const map = this.map
       function projectPoint (x, y) {
@@ -39,19 +31,37 @@ export default {
       const transform = d3.geoTransform({ point: projectPoint })
       return d3.geoPath().projection(transform)
     },
-    svg () {
-      return this.$parent.svg
-    },
     map () {
       return this.$parent.map
     }
   },
+  mounted () {
+    // console.log('layer:mounted')
+    evt.$on('map:zoom', this.resize)
+    evt.$on('map:render', this.renderFill)
+
+    this.g = this.$parent.svg.select('g.leaflet-zoom-hide')
+      .append('g')
+    this.g.call(this.tip)
+
+    if (this.layer) {
+      this.loadLayer(this.layer)
+    }
+
+    this.setTipHtml()
+  },
+  beforeDestroy () {
+    // console.log('layer:beforeDestroy')
+    evt.$off('map:zoom', this.resize)
+    evt.$off('map:render', this.renderFill)
+    this.tip.destroy()
+    this.g.selectAll('path').remove()
+    this.g.remove()
+    this.data = null
+  },
   watch: {
     variable () {
-      this.tip.html(d => `
-        <strong>${this.getLabel(d)}</strong><br>
-        ${this.variable.label}: ${this.getValue(d) ? this.valueFormat(this.getValue(d)) : 'N/A'}
-      `)
+      this.setTipHtml()
     },
     layer () {
       // console.log('layer:watch layer', this.layer)
@@ -64,13 +74,18 @@ export default {
     }
   },
   methods: {
+    setTipHtml () {
+      this.tip.html(d => `
+        <strong>${this.getLabel(d)}</strong><br>
+        ${this.variable.label}: ${this.getValue(d) ? this.valueFormat(this.getValue(d)) : 'N/A'}
+      `)
+    },
     loadLayer (layer) {
       // console.log('layer:loadLayer', layer)
       if (!layer) return
       // console.log('layer:loadLayer', layer, 'fetching')
 
-      this.svg
-        .select('g')
+      this.g
         .selectAll('path')
         .remove()
 
@@ -83,7 +98,7 @@ export default {
             geoJson = topojson.feature(data, data.objects[layer.object])
           }
 
-          this.layerData = geoJson
+          this.data = Object.freeze(geoJson)
 
           this.resize()
         })
@@ -91,7 +106,7 @@ export default {
     resize () {
       // console.log('layer:resize')
       if (this.setBounds) {
-        const bounds = this.path.bounds(this.layerData)
+        const bounds = this.path.bounds(this.data)
         this.$parent.$emit('resize', bounds)
       }
 
@@ -99,15 +114,16 @@ export default {
     },
     render () {
       // console.log('layer:render')
-      if (!this.features || this.features.length === 0) return
+      if (!this.data) return
+
+      const features = this.data.features || []
 
       const tip = this.tip
       const vm = this
 
-      const paths = this.svg
-        .select('g')
+      const paths = this.g
         .selectAll('path')
-        .data(this.features, d => `${this.theme.id}-${d.id}`)
+        .data(features, d => `${this.theme.id}-${d.id}`)
 
       paths.enter()
         .append('path')
@@ -147,14 +163,12 @@ export default {
     },
     renderFill () {
       // console.log('layer:renderFill')
-      this.svg
-        .select('g')
+      this.g
         .selectAll('path')
         .style('fill', this.getFill)
     },
     renderSelected () {
-      this.svg
-        .select('g')
+      this.g
         .selectAll('path')
         .style('stroke', d => this.isSelected(d) ? 'red' : null)
     },
@@ -169,6 +183,11 @@ export default {
 </script>
 
 <style>
+path {
+  fill: rgb(200,200,200);
+  stroke: rgb(0, 0, 0);
+  stroke-width: 0.5px;
+}
 /*
   d3-tip -----------------------------------------------------------
   https://rawgit.com/Caged/d3-tip/master/examples/example-styles.css

@@ -65,6 +65,7 @@ export default {
     })
 
     this.$on('resize', this.resize)
+    evt.$on('map:zoomTo', this.zoomTo)
 
     this.ready = true
   },
@@ -85,7 +86,13 @@ export default {
         .style('left', `${topLeft[0]}px`)
         .style('top', `${topLeft[1]}px`)
 
-      this.svg.select('g').attr('transform', `translate(${-topLeft[0]},${-topLeft[1]})`)
+      this.svg.select('g')
+        .attr('transform', `translate(${-topLeft[0]},${-topLeft[1]})`)
+    },
+    zoomTo (feature) {
+      if (!feature) return
+
+      this.map.fitBounds(L.geoJson(feature).getBounds())
     }
   }
 }
@@ -105,11 +112,5 @@ div.leaflet-top.leaflet-left {
 .leaflet-touch .leaflet-control-layers-toggle {
   width: 30px !important;
   height: 30px !important;
-}
-
-path {
-  fill: rgb(200,200,200);
-  stroke: rgb(0, 0, 0);
-  stroke-width: 0.5px;
 }
 </style>

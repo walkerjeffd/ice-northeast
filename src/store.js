@@ -30,12 +30,21 @@ export function addDim (key) {
   return dims[key]
 }
 
-export function removeDim (key) {
-  dims[key].dispose()
-}
-
 export function getDim (key) {
   return dims[key]
+}
+
+export function removeDim (key) {
+  const dim = dims[key]
+  if (dim) {
+    dim.filterAll()
+    dim.dispose()
+    delete dims[key]
+  }
+}
+
+export function hasDim (key) {
+  return key in dims
 }
 
 export function getData () {

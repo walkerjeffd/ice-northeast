@@ -12,6 +12,9 @@
         <button class="btn btn-default btn-xs" @click="zoomTo">
           <i class="fa fa-search-plus"></i> Zoom To
         </button>
+        <button class="btn btn-default btn-xs" @click="showCatchments">
+          <i class="fa fa-plus-circle"></i> Catchments
+        </button>
         <button class="btn btn-default btn-xs" @click="unselect">
           <i class="fa fa-times-circle"></i> Unselect
         </button>
@@ -90,6 +93,10 @@ export default {
     },
     zoomTo () {
       this.$emit('zoomTo', this.selected)
+    },
+    showCatchments () {
+      console.log('info:showCatchments')
+      this.$emit('showCatchments', this.selected)
     }
   }
 }

@@ -33,7 +33,7 @@ import * as d3 from 'd3'
 import { throttle } from 'throttle-debounce'
 
 import evt from '@/event-bus'
-import { getData, addDim } from '@/store'
+import { getData, addDim, removeDim, getDim } from '@/store'
 import variableMixin from '@/mixins/variable'
 
 export default {
@@ -180,6 +180,14 @@ export default {
     evt.$on('filter', this.render)
     this.render()
   },
+  beforeDestroy () {
+    evt.$off('filter', this.render)
+    // this.group.dispose()
+    // this.dim.filterAll().dispose()
+    removeDim(this.variable.id)
+    this.svg.select('g').remove()
+    this.$emit('filter')
+  },
   methods: {
     barPath (groups) {
       const path = []
@@ -211,10 +219,10 @@ export default {
     }
   },
   destroyed () {
-    evt.$off('filter', this.render)
-    this.group.dispose()
-    this.dim.filterAll().dispose()
-    this.$emit('filter')
+    // evt.$off('filter', this.render)
+    // this.group.dispose()
+    // this.dim.filterAll().dispose()
+    // this.$emit('filter')
   }
 }
 </script>

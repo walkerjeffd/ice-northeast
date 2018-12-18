@@ -2,7 +2,7 @@ const webpack = require('webpack') // eslint-disable-line import/no-extraneous-d
 
 module.exports = {
   baseUrl: process.env.NODE_ENV === 'production'
-    ? '/sheds/'
+    ? '/'
     : '/',
   configureWebpack: {
     plugins: [
