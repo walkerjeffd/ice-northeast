@@ -118,16 +118,27 @@ export default {
 
     this.brush = d3.brushX()
       .extent([[0, 0], [this.width, this.height]])
-      .on('start brush end', brushmoved)
+      .on('start brush end', () => {
+        const s = d3.event.selection
+        // console.log(`filter(${this.variable.id}):on(brush)`, s)
+
+        if (s == null) {
+          this.handle.attr('display', 'none')
+          this.svg.select(`#clip-${this.variable.id} rect`)
+            .attr('x', null)
+            .attr('width', '100%')
+        } else {
+          this.handle.attr('display', null)
+            .attr('transform', (d, i) => `translate(${s[i]}, ${-1 * (100 / 4)})`)
+          this.svg.select(`#clip-${this.variable.id} rect`)
+            .attr('x', s[0])
+            .attr('width', s[1] - s[0])
+        }
+
+        setFilterRange(s)
+      })
 
     const gBrush = g.append('g').attr('class', 'brush').call(this.brush)
-
-    const brushResizePath = (d) => {
-      const e = +(d.type === 'e')
-      const x = e ? 1 : -1
-      const y = this.height / 2
-      return 'M' + (0.5 * x) + ',' + y + 'A6,6 0 0 ' + e + ' ' + (6.5 * x) + ',' + (y + 6) + 'V' + (2 * y - 6) + 'A6,6 0 0 ' + e + ' ' + (0.5 * x) + ',' + (2 * y) + 'Z' + 'M' + (2.5 * x) + ',' + (y + 8) + 'V' + (2 * y - 8) + 'M' + (4.5 * x) + ',' + (y + 8) + 'V' + (2 * y - 8)
-    }
 
     this.handle = gBrush.selectAll('.handle--custom')
       .data([{ type: 'w' }, { type: 'e' }])
@@ -136,50 +147,37 @@ export default {
       .attr('class', 'handle--custom')
       .attr('stroke', '#000')
       .attr('cursor', 'ew-resize')
-      .attr('d', brushResizePath)
+      .attr('d', (d) => {
+        const e = +(d.type === 'e')
+        const x = e ? 1 : -1
+        const y = this.height / 2
+        return 'M' + (0.5 * x) + ',' + y + 'A6,6 0 0 ' + e + ' ' + (6.5 * x) + ',' + (y + 6) + 'V' + (2 * y - 6) + 'A6,6 0 0 ' + e + ' ' + (0.5 * x) + ',' + (2 * y) + 'Z' + 'M' + (2.5 * x) + ',' + (y + 8) + 'V' + (2 * y - 8) + 'M' + (4.5 * x) + ',' + (y + 8) + 'V' + (2 * y - 8)
+      })
       .attr('display', 'none')
 
-    const vm = this
-
-    const setFilterRange = throttle(100, function (s) {
+    const setFilterRange = throttle(100, (s) => {
       // console.log(`filter(${vm.variable.id}):setFilterRange`, s)
-      const extent = s.map(vm.xScale.invert)
-
-      if (extent[1] === vm.xScale.domain()[1]) {
-        extent[1] = vm.fullExtent[1]
+      if (s === null) {
+        this.dim.filterAll()
+        this.range = null
       } else {
-        extent[1] = extent[1] * 1.0000001
+        const extent = s.map(this.xScale.invert)
+
+        if (extent[1] === this.xScale.domain()[1]) {
+          extent[1] = this.fullExtent[1]
+        } else {
+          extent[1] = extent[1] * 1.0000001
+        }
+
+        this.range = extent
+
+        this.dim.filterRange(extent)
       }
 
-      vm.range = extent
-
-      vm.dim.filterRange(extent)
       evt.$emit('filter')
     })
 
-    function brushmoved () {
-      var s = d3.event.selection
-      // console.log(`filter(${vm.variable.id}):brushmoved`, s)
-      if (s == null) {
-        vm.dim.filterAll()
-        vm.range = null
-        vm.handle.attr('display', 'none')
-        vm.svg.select(`#clip-${vm.variable.id} rect`)
-          .attr('x', null)
-          .attr('width', '100%')
-        evt.$emit('filter')
-      } else {
-        setFilterRange(s)
-        vm.handle.attr('display', null)
-          .attr('transform', (d, i) => `translate(${s[i]}, ${-1 * (100 / 4)})`)
-        vm.svg.select(`#clip-${vm.variable.id} rect`)
-          .attr('x', s[0])
-          .attr('width', s[1] - s[0])
-      }
-    }
-
     evt.$on('filter', this.render)
-
     this.render()
   },
   methods: {
@@ -226,11 +224,6 @@ export default {
   width: 430px;
   margin-top: 10px;
   margin-bottom: 0;
-}
-
-.ice-filter hr {
-  margin-top: 10px;
-  margin-bottom: 10px;
 }
 
 .ice-filter .title {
