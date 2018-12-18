@@ -6,11 +6,7 @@ import * as crossfilter from 'crossfilter2'
 
 Vue.use(Vuex)
 
-const xf = crossfilter()
-
-// xf.onChange(() => {
-//   store.dispatch('setFilteredCount', xf.allFiltered().length)
-// })
+export const xf = crossfilter()
 window.xf = xf
 
 const agg = {
@@ -19,33 +15,37 @@ const agg = {
   map: {}
 }
 
-const dims = {}
+// const dims = {}
+
+// export function getCrossfilter () {
+//   return xf
+// }
 
 export function getGroupByKey (key) {
   return agg.map[key]
 }
 
-export function addDim (key) {
-  dims[key] = xf.dimension(d => d[key])
-  return dims[key]
-}
+// export function addDim (key) {
+//   dims[key] = xf.dimension(d => d[key])
+//   return dims[key]
+// }
 
-export function getDim (key) {
-  return dims[key]
-}
+// export function getDim (key) {
+//   return dims[key]
+// }
 
-export function removeDim (key) {
-  const dim = dims[key]
-  if (dim) {
-    dim.filterAll()
-    dim.dispose()
-    delete dims[key]
-  }
-}
+// export function removeDim (key) {
+//   const dim = dims[key]
+//   if (dim) {
+//     dim.filterAll()
+//     dim.dispose()
+//     delete dims[key]
+//   }
+// }
 
-export function hasDim (key) {
-  return key in dims
-}
+// export function hasDim (key) {
+//   return key in dims
+// }
 
 export function getData () {
   return xf.all()

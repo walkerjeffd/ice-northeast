@@ -69,6 +69,9 @@ export default {
 
     this.ready = true
   },
+  beforeDestroy () {
+    evt.$off('map:zoomTo', this.zoomTo)
+  },
   computed: {
     svg () {
       return d3.select(this.map.getPanes().overlayPane).select('svg')

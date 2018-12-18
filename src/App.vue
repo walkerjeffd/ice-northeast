@@ -41,17 +41,17 @@
             </div>
             <div class="col-xs-9">
               <select-picker
-                id="states"
+                id="region"
                 :config="{
                   actionsBox: true,
                   selectedTextFormat: 'count',
                   countSelectedText: '{0} states selected',
                   dropupAuto: false
                 }"
-                :options="stateOptions"
-                :value="selected.states"
+                :options="regionFilter.options"
+                :value="regionFilter.selected"
                 :multiple="true"
-                @input="selectStates"
+                @input="selectRegions"
                 value-field="id"
                 text-field="label"
                 title="Select states..."
@@ -104,8 +104,8 @@
               <select-picker
                 id="color"
                 :config="{}"
-                :options="colorOptions"
-                :value="selected.color"
+                :options="color.options"
+                :value="color.selected"
                 :multiple="false"
                 @input="selectColor"
                 value-field="id"
@@ -122,8 +122,8 @@
               <select-picker
                 id="color"
                 :config="{}"
-                :options="transformOptions"
-                :value="selected.transform"
+                :options="transform.options"
+                :value="transform.selected"
                 :multiple="false"
                 @input="selectTransform"
                 value-field="id"
@@ -190,7 +190,7 @@
           :get-fill="getCatchmentFill"
           :get-value="getCatchmentValue"
           :get-label="getCatchmentLabel"
-          :selected="selected.catchment"
+          :selected="catchments.selected"
           @click="selectCatchment" />
       </ice-map>
       <div
@@ -207,6 +207,7 @@
 import axios from 'axios'
 import { mapGetters } from 'vuex'
 import * as d3 from 'd3'
+// import * as crossfilter from 'crossfilter2'
 
 import evt from './event-bus'
 
@@ -217,7 +218,8 @@ import IceLegend from './components/IceLegend.vue'
 import IceInfoBox from './components/IceInfoBox.vue'
 import IceFilter from './components/IceFilter.vue'
 import SelectPicker from './components/SelectPicker.vue'
-import { getGroupByKey, addDim, getDim, removeDim, getData, isFiltered, getFilteredCount } from '@/store'
+// import { getGroupByKey, addDim, getDim, removeDim, getData, isFiltered, getFilteredCount } from '@/store'
+import { xf, getGroupByKey, getData, isFiltered, getFilteredCount } from '@/store'
 
 export default {
   name: 'app',
@@ -244,59 +246,57 @@ export default {
       show: {
         legendSettings: false
       },
-      colorOptions: [
-        { id: 'YlGnBu', label: 'Yellow-Green-Blue' },
-        { id: 'Viridis', label: 'Viridis' },
-        { id: 'Inferno', label: 'Inferno' },
-        { id: 'Warm', label: 'Warm' },
-        { id: 'Cool', label: 'Cool' }
-      ],
-      stateOptions: [
-        { id: 'CT', label: 'Connecticut' },
-        { id: 'DE', label: 'Delaware' },
-        { id: 'DC', label: 'District of Columbia' },
-        { id: 'ME', label: 'Maine' },
-        { id: 'MD', label: 'Maryland' },
-        { id: 'MA', label: 'Massachusetts' },
-        { id: 'NH', label: 'New Hampshire' },
-        { id: 'NJ', label: 'New Jersey' },
-        { id: 'NY', label: 'New York' },
-        { id: 'PA', label: 'Pennsylvania' },
-        { id: 'RI', label: 'Rhode Island' },
-        { id: 'VT', label: 'Vermont' },
-        { id: 'VA', label: 'Virginia' },
-        { id: 'WV', label: 'West Virginia' }
-      ],
-      transformOptions: [
-        { id: 'linear', label: 'Linear' },
-        { id: 'log', label: 'Log' }
-      ],
+      color: {
+        options: [
+          { id: 'YlGnBu', label: 'Yellow-Green-Blue' },
+          { id: 'Viridis', label: 'Viridis' },
+          { id: 'Inferno', label: 'Inferno' },
+          { id: 'Warm', label: 'Warm' },
+          { id: 'Cool', label: 'Cool' }
+        ],
+        selected: 'Viridis'
+      },
+      transform: {
+        options: [
+          { id: 'linear', label: 'Linear' },
+          { id: 'log', label: 'Log' }
+        ],
+        selected: 'linear'
+      },
+      regionFilter: {
+        options: [
+          { id: 'CT', label: 'Connecticut' },
+          { id: 'DE', label: 'Delaware' },
+          { id: 'DC', label: 'District of Columbia' },
+          { id: 'ME', label: 'Maine' },
+          { id: 'MD', label: 'Maryland' },
+          { id: 'MA', label: 'Massachusetts' },
+          { id: 'NH', label: 'New Hampshire' },
+          { id: 'NJ', label: 'New Jersey' },
+          { id: 'NY', label: 'New York' },
+          { id: 'PA', label: 'Pennsylvania' },
+          { id: 'RI', label: 'Rhode Island' },
+          { id: 'VT', label: 'Vermont' },
+          { id: 'VA', label: 'Virginia' },
+          { id: 'WV', label: 'West Virginia' }
+        ],
+        selected: ['CT', 'DE', 'DC', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT', 'VA', 'WV']
+      },
       selected: {
         theme: null,
         variable: null,
-        color: 'Viridis',
-        transform: 'linear',
-        states: ['CT', 'DE', 'DC', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT', 'VA', 'WV'],
         feature: null,
         filters: []
       },
       filteredCount: 0,
       catchments: {
         layer: null,
-        data: []
+        selected: null
       }
     }
   },
   computed: {
     ...mapGetters(['themes', 'theme', 'layer', 'variables', 'variable', 'stats']),
-    catchmentsMap () {
-      // console.log('catchmentsMap')
-      const map = new Map()
-      this.catchments.data.forEach((d) => {
-        map.set(d.id, d)
-      })
-      return map
-    },
     variableOptions () {
       return this.variables.filter(v => v.map)
     },
@@ -311,11 +311,10 @@ export default {
     variableScale () {
       if (!this.variable) return d3.scaleLinear()
 
-      const transform = this.selected.transform
       const domain = this.variable.scale.domain
 
       let scale
-      switch (transform) {
+      switch (this.transform.selected) {
         case 'log':
           scale = d3.scaleLog()
           if (domain[0] <= 0) domain[0] = 0.1
@@ -334,10 +333,12 @@ export default {
         .clamp(true)
     },
     colorScale () {
-      return d3.scaleSequential(d3[`interpolate${this.selected.color}`])
+      return d3.scaleSequential(d3[`interpolate${this.color.selected}`])
     }
   },
   created () {
+    this.catchments.map = new Map()
+
     axios.get('config.json')
       .then(response => response.data)
       .then(config => this.$store.dispatch('loadConfig', config))
@@ -346,34 +347,42 @@ export default {
         return this.selectTheme(theme.id)
       })
 
-    evt.$on('filter', () => {
-      this.filteredCount = getFilteredCount()
-      evt.$emit('map:render')
-    })
+    evt.$on('filter', this.onFilter)
+  },
+  beforeDestroy () {
+    evt.$off('filter', this.onFilter)
   },
   methods: {
+    onFilter () {
+      this.filteredCount = getFilteredCount()
+      evt.$emit('map:render')
+    },
     destroyFilter (id) {
       // console.log('destroyFilter', id)
       const index = this.selected.filters.indexOf(id)
       this.selected.filters.splice(index, 1)
     },
     selectColor (color) {
-      this.selected.color = color
+      this.color.selected = color
       evt.$emit('map:render')
     },
-    selectStates (states) {
-      this.selected.states = states
-      const dim = getDim('state')
-      if (dim) dim.filterFunction(d => states.includes(d))
+    selectRegions (regions) {
+      this.regionFilter.selected = regions
+      if (this.regionFilter.dim) {
+        this.regionFilter.dim.filterFunction(d => regions.includes(d))
+      }
       evt.$emit('filter')
     },
     selectTransform (transform) {
-      this.selected.transform = transform
+      this.transform.selected = transform
       evt.$emit('map:render')
     },
     selectTheme (id) {
       this.loading = true
-      removeDim('state')
+      if (this.regionFilter.dim) {
+        this.regionFilter.dim.filterAll()
+        this.regionFilter.dim.dispose()
+      }
       this.$store.dispatch('selectThemeById', id)
         .then(() => {
           this.selected.theme = id
@@ -390,8 +399,8 @@ export default {
           return Promise.resolve()
         })
         .then(() => {
-          addDim('state')
-          this.selectStates(this.selected.states)
+          this.regionFilter.dim = xf.dimension(d => d.state)
+          this.selectRegions(this.regionFilter.selected)
           return Promise.resolve()
         })
         .then(() => {
@@ -413,7 +422,9 @@ export default {
     },
     selectFeature (feature) {
       this.catchments.layer = null
-      this.catchments.data = []
+      this.catchments.map.clear()
+      this.selectCatchment()
+
       if (!feature || this.selected.feature === feature) {
         this.selected.feature = null
       } else {
@@ -460,25 +471,37 @@ export default {
           ...d
         }))
         .filter(d => d[this.theme.group.by] === feature.id)
-      this.catchments.data = Object.freeze(data)
+
+      this.catchments.map.clear()
+
+      data.forEach((d) => {
+        this.catchments.map.set(d.id, d)
+      })
+
       evt.$emit('map:render')
     },
-    getCatchmentValue (d) {
-      // const row = this.catchments.data.find(row => row.id === d.id)
-      const row = this.catchmentsMap.get(d.id)
+    getCatchmentValue (catchment) {
+      const row = this.catchments.map.get(catchment.id)
       return row && isFiltered(row.$index) ? row[this.variable.id] : null
     },
-    getCatchmentFill (d) {
-      const value = this.getCatchmentValue(d)
+    getCatchmentFill (catchment) {
+      const value = this.getCatchmentValue(catchment)
       const scaled = value !== null ? this.variableScale(value) : null
       const color = scaled !== null ? this.colorScale(scaled) : 'none'
       return color
     },
-    getCatchmentLabel (d) {
-      return `Catchment: ${d.id}`
+    getCatchmentLabel (catchment) {
+      return `Catchment: ${catchment.id}`
     },
-    selectCatchment (d) {
-      console.log('selectCatchment', d)
+    selectCatchment (catchment) {
+      // console.log('selectCatchment', d)
+      if (!catchment || this.catchments.selected === catchment) {
+        this.catchments.selected = null
+      } else {
+        this.catchments.selected = catchment
+      }
+
+      evt.$emit('map:render')
     }
   }
 }

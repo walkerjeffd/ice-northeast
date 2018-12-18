@@ -33,7 +33,8 @@ import * as d3 from 'd3'
 import { throttle } from 'throttle-debounce'
 
 import evt from '@/event-bus'
-import { getData, addDim, removeDim } from '@/store'
+// import { addDim, removeDim, getCrossfilter } from '@/store'
+import { xf } from '@/store'
 import variableMixin from '@/mixins/variable'
 
 export default {
@@ -70,7 +71,8 @@ export default {
     const interval = (this.variable.scale.domain[1] - this.variable.scale.domain[0]) / 40
 
     this.yScale = d3.scaleLinear().range([100, 0])
-    this.dim = addDim(this.variable.id)
+
+    this.dim = xf.dimension(d => d[this.variable.id])
 
     this.group = this.dim
       .group((d) => {
@@ -204,9 +206,9 @@ export default {
   },
   beforeDestroy () {
     evt.$off('filter', this.render)
-    // this.group.dispose()
-    // this.dim.filterAll().dispose()
-    removeDim(this.variable.id)
+    this.group.dispose()
+    this.dim.filterAll()
+    this.dim.dispose()
     this.svg.select('g').remove()
     this.$emit('filter')
   },
