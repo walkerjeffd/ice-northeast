@@ -54,21 +54,30 @@ export default {
       `)
     },
     layer () {
+      // console.log('layer:watch layer', this.layer)
       if (!this.layer) return
 
       return this.loadLayer(this.layer)
     },
     selected () {
       this.renderSelected()
-      // this.render()
     }
   },
   methods: {
     loadLayer (layer) {
+      // console.log('layer:loadLayer', layer)
       if (!layer) return
+      // console.log('layer:loadLayer', layer, 'fetching')
+
+      this.svg
+        .select('g')
+        .selectAll('path')
+        .remove()
+
       return axios.get(`${layer.url}`)
         .then(response => response.data)
         .then((data) => {
+          // console.log('layer:loadLayer', layer, 'parsing')
           let geoJson = data
           if (layer.type === 'topojson') {
             geoJson = topojson.feature(data, data.objects[layer.object])
@@ -77,16 +86,10 @@ export default {
           this.layerData = geoJson
 
           this.resize()
-
-          this.svg
-            .select('g')
-            .selectAll('path')
-            .remove()
-
-          this.render()
         })
     },
     resize () {
+      // console.log('layer:resize')
       if (this.setBounds) {
         const bounds = this.path.bounds(this.layerData)
         this.$parent.$emit('resize', bounds)
