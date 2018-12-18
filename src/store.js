@@ -51,9 +51,8 @@ export const store = new Vuex.Store({
     config: null,
     theme: null,
     variable: null,
-    counts: {
-      filtered: 0,
-      total: 0
+    stats: {
+      count: 0
     }
   },
   getters: {
@@ -63,9 +62,7 @@ export const store = new Vuex.Store({
     variables: state => (state.theme ? state.theme.variables : []),
     variable: state => state.variable,
     layer: state => (state.theme ? state.theme.layer : undefined),
-    counts: state => state.counts,
-    filteredCount: state => state.counts.filtered,
-    totalCount: state => state.counts.total
+    stats: state => state.stats
   },
   mutations: {
     SET_CONFIG (state, config) {
@@ -77,20 +74,14 @@ export const store = new Vuex.Store({
     SET_VARIABLE (state, variable) {
       state.variable = variable
     },
-    SET_FILTERED_COUNT (state, count) {
-      state.counts.filtered = count
-    },
-    SET_TOTAL_COUNT (state, count) {
-      state.counts.total = count
+    SET_STATS_COUNT (state, count) {
+      state.stats.count = count
     }
   },
   actions: {
     loadConfig ({ commit }, config) {
       commit('SET_CONFIG', config)
       return Promise.resolve(config)
-    },
-    setFilteredCount ({ commit }, count) {
-      commit('SET_FILTERED_COUNT', count)
     },
     selectThemeById ({ commit, getters, dispatch }, id) {
       if (!getters.themes || getters.themes.length === 0 || !id) return
@@ -121,8 +112,7 @@ export const store = new Vuex.Store({
             agg.dim = xf.dimension(d => d[theme.group.by])
           }
 
-          commit('SET_TOTAL_COUNT', xf.size())
-          commit('SET_FILTERED_COUNT', xf.allFiltered().length)
+          commit('SET_STATS_COUNT', data.length)
           commit('SET_THEME', theme)
 
           return theme

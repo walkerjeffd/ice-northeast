@@ -151,7 +151,7 @@
             <div>
               <i class="fa fa-square" style="color:steelblue"></i>
               All Catchments
-              <span class="pull-right" v-show="theme" style="display:none">{{ filteredCount.toLocaleString() }} of {{ counts.total.toLocaleString() }} filtered</span>
+              <span class="pull-right" v-show="theme" style="display:none">{{ filteredCount.toLocaleString() }} of {{ stats.count.toLocaleString() }} filtered</span>
             </div>
           </div>
           <div
@@ -274,7 +274,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['themes', 'theme', 'layer', 'variables', 'variable', 'counts']),
+    ...mapGetters(['themes', 'theme', 'layer', 'variables', 'variable', 'stats']),
     variableOptions () {
       return this.variables.filter(v => v.map)
     },
@@ -327,8 +327,6 @@ export default {
 
     evt.$on('filter', () => {
       this.filteredCount = getFilteredCount()
-      // const count = getFilteredCount()
-      // this.$store.dispatch('setFilteredCount', count)
       evt.$emit('map:render')
     })
   },
