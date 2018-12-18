@@ -79,6 +79,7 @@ export default {
     this.fullExtent = d3.extent(getData(), d => d[this.variable.id])
 
     this.dim = addDim(this.variable.id)
+
     this.group = this.dim
       .group((d) => {
         if (d >= this.variable.scale.domain[1]) {

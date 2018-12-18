@@ -95,7 +95,7 @@ export default {
       this.$emit('zoomTo', this.selected)
     },
     showCatchments () {
-      console.log('info:showCatchments')
+      // console.log('info:showCatchments')
       this.$emit('showCatchments', this.selected)
     }
   }

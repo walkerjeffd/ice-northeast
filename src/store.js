@@ -51,6 +51,10 @@ export function getData () {
   return xf.all()
 }
 
+export function isFiltered (index) {
+  return xf.isElementFiltered(index)
+}
+
 export function getFilteredCount () {
   return xf.allFiltered().length
 }

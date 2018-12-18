@@ -217,7 +217,7 @@ import IceLegend from './components/IceLegend.vue'
 import IceInfoBox from './components/IceInfoBox.vue'
 import IceFilter from './components/IceFilter.vue'
 import SelectPicker from './components/SelectPicker.vue'
-import { getGroupByKey, addDim, getDim, removeDim, getData, getFilteredCount } from '@/store'
+import { getGroupByKey, addDim, getDim, removeDim, getData, isFiltered, getFilteredCount } from '@/store'
 
 export default {
   name: 'app',
@@ -289,6 +289,14 @@ export default {
   },
   computed: {
     ...mapGetters(['themes', 'theme', 'layer', 'variables', 'variable', 'stats']),
+    catchmentsMap () {
+      // console.log('catchmentsMap')
+      const map = new Map()
+      this.catchments.data.forEach((d) => {
+        map.set(d.id, d)
+      })
+      return map
+    },
     variableOptions () {
       return this.variables.filter(v => v.map)
     },
@@ -405,11 +413,13 @@ export default {
     },
     selectFeature (feature) {
       this.catchments.layer = null
+      this.catchments.data = []
       if (!feature || this.selected.feature === feature) {
         this.selected.feature = null
       } else {
         this.selected.feature = feature
       }
+      evt.$emit('map:render')
     },
     selectFilters (filters) {
       this.selected.filters = filters
@@ -425,7 +435,10 @@ export default {
       return `${this.theme.label}: ${label}`
     },
     getFill (feature) {
-      const value = this.getValue(feature)
+      let value = null
+      if (!this.catchments.layer || !this.selected.feature || this.selected.feature.id !== feature.id) {
+        value = this.getValue(feature)
+      }
       const scaled = value !== null ? this.variableScale(value) : null
       const color = scaled !== null ? this.colorScale(scaled) : 'none'
       return color
@@ -435,19 +448,25 @@ export default {
       return group ? group.mean : null
     },
     showCatchments (feature) {
-      console.log('showCatchments()', feature)
+      // console.log('showCatchments()', feature)
       this.catchments.layer = {
         geometry: 'polygon',
         type: 'geojson',
         url: `${this.theme.id}/${feature.id}.json`
       }
       const data = getData()
+        .map((d, i) => ({
+          $index: i,
+          ...d
+        }))
         .filter(d => d[this.theme.group.by] === feature.id)
       this.catchments.data = Object.freeze(data)
+      evt.$emit('map:render')
     },
     getCatchmentValue (d) {
-      const row = this.catchments.data.find(row => row.id === d.id)
-      return row ? row[this.variable.id] : null
+      // const row = this.catchments.data.find(row => row.id === d.id)
+      const row = this.catchmentsMap.get(d.id)
+      return row && isFiltered(row.$index) ? row[this.variable.id] : null
     },
     getCatchmentFill (d) {
       const value = this.getCatchmentValue(d)
