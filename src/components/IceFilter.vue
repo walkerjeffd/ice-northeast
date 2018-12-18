@@ -10,7 +10,6 @@
       <div style="display:inline;">
         Filter:
         <span v-if="range">
-          {{ range[1] | textFormat(variable.formats.text) }} -->
           {{ valueFormat(range[0]) }} -
           {{ valueFormat(range[1]) }}
           <a href="#" @click.prevent="reset">(reset)</a>
@@ -30,10 +29,12 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import * as d3 from 'd3'
+import { throttle } from 'throttle-debounce'
 
 import evt from '@/event-bus'
-import { addDim } from '@/store'
+import { getData, addDim } from '@/store'
 import variableMixin from '@/mixins/variable'
 
 export default {
@@ -52,16 +53,20 @@ export default {
       },
       height: 100,
       brush: null,
-      yScale: d3.scaleLinear().range([100, 0])
+      handle: null,
+      yScale: d3.scaleLinear().range([100, 0]),
+      fullExtent: [-Infinity, Infinity]
     }
   },
   computed: {
     xScale () {
+      // console.log(`filter(${this.variable.id}):computed xScale`)
       return d3.scaleLinear()
         .domain(this.variable.scale.domain)
         .rangeRound([0, +this.width])
     },
     axis () {
+      // console.log(`filter(${this.variable.id}):computed axis`)
       return d3.axisBottom(this.xScale)
     }
   },
@@ -69,7 +74,10 @@ export default {
     textFormat: (value, format) => d3.format(format)(value)
   },
   mounted () {
+    // console.log(`filter(${this.variable.id}):mounted`)
     const interval = (this.variable.scale.domain[1] - this.variable.scale.domain[0]) / 40
+
+    this.fullExtent = d3.extent(getData(), d => d[this.variable.id])
 
     this.dim = addDim(this.variable.id)
     this.group = this.dim
@@ -122,7 +130,7 @@ export default {
       return 'M' + (0.5 * x) + ',' + y + 'A6,6 0 0 ' + e + ' ' + (6.5 * x) + ',' + (y + 6) + 'V' + (2 * y - 6) + 'A6,6 0 0 ' + e + ' ' + (0.5 * x) + ',' + (2 * y) + 'Z' + 'M' + (2.5 * x) + ',' + (y + 8) + 'V' + (2 * y - 8) + 'M' + (4.5 * x) + ',' + (y + 8) + 'V' + (2 * y - 8)
     }
 
-    var handle = gBrush.selectAll('.handle--custom')
+    this.handle = gBrush.selectAll('.handle--custom')
       .data([{ type: 'w' }, { type: 'e' }])
       .enter()
       .append('path')
@@ -130,50 +138,78 @@ export default {
       .attr('stroke', '#000')
       .attr('cursor', 'ew-resize')
       .attr('d', brushResizePath)
+      .attr('display', 'none')
 
     const vm = this
 
+    const setFilterRange = throttle(100, function (s) {
+      // console.log(`filter(${vm.variable.id}):setFilterRange`, s)
+      const extent = s.map(vm.xScale.invert)
+
+      if (extent[1] === vm.xScale.domain()[1]) {
+        extent[1] = vm.fullExtent[1]
+      } else {
+        extent[1] = extent[1] * 1.0000001
+      }
+
+      vm.range = extent
+
+      vm.dim.filterRange(extent)
+      evt.$emit('filter')
+    })
+
     function brushmoved () {
       var s = d3.event.selection
+      // console.log(`filter(${vm.variable.id}):brushmoved`, s)
       if (s == null) {
-        vm.reset()
-        handle.attr('display', 'none')
+        vm.dim.filterAll()
+        vm.range = null
+        vm.handle.attr('display', 'none')
+        vm.svg.select(`#clip-${vm.variable.id} rect`)
+          .attr('x', null)
+          .attr('width', '100%')
+        evt.$emit('filter')
       } else {
-        const extent = s.map(vm.xScale.invert)
-        vm.range = extent
-        vm.dim.filterRange([extent[0], extent[1] * 1.0000001])
-        vm.$emit('brush')
-        handle.attr('display', null)
+        setFilterRange(s)
+        vm.handle.attr('display', null)
           .attr('transform', (d, i) => `translate(${s[i]}, ${-1 * (100 / 4)})`)
+        vm.svg.select(`#clip-${vm.variable.id} rect`)
+          .attr('x', s[0])
+          .attr('width', s[1] - s[0])
       }
     }
 
     evt.$on('filter', this.render)
+
+    this.render()
   },
   methods: {
-    render () {
-      const barPath = (groups) => {
-        const path = []
-        const n = groups.length
-        let i = -1
-        let d
-        while (++i < n) {
-          d = groups[i]
-          path.push('M', this.xScale(d.key), ',', this.height, 'V', this.yScale(d.value), 'h9V', this.height)
-        }
-        return path.join('')
+    barPath (groups) {
+      const path = []
+      const n = groups.length
+      let i = -1
+      let d
+      while (++i < n) {
+        d = groups[i]
+        path.push('M', this.xScale(d.key), ',', this.height, 'V', this.yScale(d.value), 'h9V', this.height)
       }
-
+      return path.join('')
+    },
+    render () {
+      // console.log(`filter(${this.variable.id}):render`)
       this.yScale.domain([0, this.group.top(1)[0].value])
-
-      this.svg.select('g').selectAll('.bar').attr('d', barPath)
+      this.svg.select('g').selectAll('.bar').attr('d', this.barPath)
     },
     reset () {
+      // console.log(`filter(${this.variable.id}):reset`)
+      const gBrush = this.svg.select('g.brush')
+      gBrush.call(this.brush.move, null)
       this.dim.filterAll()
       this.range = null
-      this.$emit('brush')
+      evt.$emit('filter')
     },
     destroy () {
+      // console.log(`filter(${this.variable.id}):destroy`)
       this.$emit('destroy', this.variable.id)
     }
   },
@@ -181,7 +217,7 @@ export default {
     evt.$off('filter', this.render)
     this.group.dispose()
     this.dim.filterAll().dispose()
-    this.$emit('brush')
+    this.$emit('filter')
   }
 }
 </script>
@@ -221,11 +257,13 @@ export default {
 }
 
 .background.bar {
-  fill: #ccc;
+  fill: #aaa;
+  stroke: none;
 }
 
 .foreground.bar {
   fill: steelblue;
+  stroke: none;
 }
 
 .axis path, .axis line {

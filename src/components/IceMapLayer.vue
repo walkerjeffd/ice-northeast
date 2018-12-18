@@ -10,7 +10,7 @@ import variableMixin from '@/mixins/variable'
 
 export default {
   name: 'IceMapLayer',
-  props: ['setBounds', 'layer', 'getColor', 'getValue', 'getLabel', 'selected'],
+  props: ['setBounds', 'layer', 'getFill', 'getValue', 'getLabel', 'selected'],
   mixins: [variableMixin],
   mounted () {
     evt.$on('map:zoom', this.resize)
@@ -95,6 +95,7 @@ export default {
       this.render()
     },
     render () {
+      // console.log('layer:render')
       if (!this.features || this.features.length === 0) return
 
       const tip = this.tip
@@ -137,16 +138,16 @@ export default {
         })
         .merge(paths)
         .attr('d', this.path)
-        .style('fill', this.getColor)
+        .style('fill', this.getFill)
 
       paths.exit().remove()
     },
     renderFill () {
+      // console.log('layer:renderFill')
       this.svg
         .select('g')
         .selectAll('path')
-        .style('fill', this.getColor)
-        // .style('display', d => this.getValue(d) === null ? 'none' : null)
+        .style('fill', this.getFill)
     },
     renderSelected () {
       this.svg

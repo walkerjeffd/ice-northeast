@@ -162,7 +162,6 @@
               :key="variable.id"
               :variable="variable"
               width="360"
-              @brush="brushed"
               @destroy="destroyFilter"
             />
           </div>
@@ -178,7 +177,7 @@
         <ice-map-layer
           :layer="layer"
           :set-bounds="true"
-          :get-color="getColor"
+          :get-fill="getFill"
           :get-value="getValue"
           :get-label="getFeatureLabel"
           :selected="selected.feature"
@@ -265,7 +264,7 @@ export default {
       selected: {
         theme: null,
         variable: null,
-        color: 'YlGnBu',
+        color: 'Viridis',
         transform: 'linear',
         states: ['CT', 'DE', 'DC', 'ME', 'MD', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT', 'VA', 'WV'],
         feature: null,
@@ -334,11 +333,8 @@ export default {
     })
   },
   methods: {
-    brushed () {
-      evt.$emit('filter')
-    },
     destroyFilter (id) {
-      console.log('destroyFilter', id)
+      // console.log('destroyFilter', id)
       const index = this.selected.filters.indexOf(id)
       this.selected.filters.splice(index, 1)
     },
@@ -414,10 +410,10 @@ export default {
       }
       return feature.id
     },
-    getColor (feature) {
+    getFill (feature) {
       const value = this.getValue(feature)
       const scaled = value !== null ? this.variableScale(value) : null
-      const color = scaled !== null ? this.colorScale(scaled) : '#CCCCCC'
+      const color = scaled !== null ? this.colorScale(scaled) : 'none'
       return color
     },
     getValue (feature) {

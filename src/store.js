@@ -38,6 +38,10 @@ export function getDim (key) {
   return dims[key]
 }
 
+export function getData () {
+  return xf.all()
+}
+
 export function getFilteredCount () {
   return xf.allFiltered().length
 }
@@ -192,6 +196,8 @@ export const store = new Vuex.Store({
       agg.group.all().forEach(d => {
         agg.map[d.key] = d.value // d is a reference, automatically updates after filtering
       })
+
+      variable.extent = d3.extent(xf.all().map(d => d[variable.id]))
 
       commit('SET_VARIABLE', variable)
 
