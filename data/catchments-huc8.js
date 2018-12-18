@@ -3,18 +3,18 @@ const pgp = require('pg-promise')()
 
 const db = pgp('postgres://jeff@trout.local/sheds')
 
-const fetch = (huc6) => {
-  console.log('fetch', huc6)
+const fetch = (huc8) => {
+  console.log('fetch', huc8)
   return db.any(`
       WITH ch AS (
-        SELECT featureid, huc12, substr(huc12, 1, 6) AS huc6
+        SELECT featureid, huc12, substr(huc12, 1, 8) AS huc8
         FROM data.catchment_huc12
-        WHERE substr(huc12, 1, 6)=$1::text
+        WHERE substr(huc12, 1, 8)=$1::text
       )
       SELECT c.featureid as id, 'Feature' as type, ST_AsGeoJSON(c.geom, 5)::json AS geometry FROM gis.catchments c INNER JOIN ch ON c.featureid=ch.featureid
-    `, huc6)
+    `, huc8)
     .then((features) => ({
-      id: huc6,
+      id: huc8,
       json: {
         type: 'FeatureCollection',
         crs: {
@@ -29,14 +29,14 @@ const fetch = (huc6) => {
 }
 
 const saveFile = (huc) => {
-  const filename = `huc6/${huc.id}.json`
+  const filename = `huc8/${huc.id}.json`
   console.log(`saving ${filename}`)
   fs.writeFileSync(filename, JSON.stringify(huc.json))
   return Promise.resolve(filename)
 }
 
-db.any('SELECT DISTINCT substr(huc12, 1, 6) AS huc6 FROM data.catchment_huc12')
-  .then(rows => rows.map(d => d.huc6))
+db.any('SELECT DISTINCT substr(huc12, 1, 8) AS huc8 FROM data.catchment_huc12')
+  .then(rows => rows.map(d => d.huc8))
   .then((hucs) => {
     return hucs.reduce((promiseChain, huc) => {
       return promiseChain.then(chainResults =>
