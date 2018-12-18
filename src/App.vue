@@ -151,7 +151,12 @@
             <div>
               <i class="fa fa-square" style="color:steelblue"></i>
               All Catchments
-              <span class="pull-right" v-show="theme" style="display:none">{{ filteredCount.toLocaleString() }} of {{ stats.count.toLocaleString() }} filtered</span>
+              <span class="pull-right" v-show="theme" style="display:none">{{ counts.all.filtered.toLocaleString() }} of {{ counts.all.total.toLocaleString() }} filtered</span>
+            </div>
+            <div v-if="counts.subset.total > 0">
+              <i class="fa fa-square" style="color:orangered"></i>
+              Catchments In Selected HUC
+              <span class="pull-right" v-show="theme" style="display:none">{{ counts.subset.filtered.toLocaleString() }} of {{ counts.subset.total.toLocaleString() }} filtered</span>
             </div>
           </div>
           <div
@@ -219,7 +224,7 @@ import IceInfoBox from './components/IceInfoBox.vue'
 import IceFilter from './components/IceFilter.vue'
 import SelectPicker from './components/SelectPicker.vue'
 // import { getGroupByKey, addDim, getDim, removeDim, getData, isFiltered, getFilteredCount } from '@/store'
-import { xf, getGroupByKey, isFiltered, getFilteredCount } from '@/store'
+import { xf, getGroupByKey, isFiltered } from '@/store'
 
 export default {
   name: 'app',
@@ -288,7 +293,16 @@ export default {
         feature: null,
         filters: []
       },
-      filteredCount: 0,
+      counts: {
+        all: {
+          total: 0,
+          filtered: 0
+        },
+        subset: {
+          total: 0,
+          filtered: 0
+        }
+      },
       catchments: {
         layer: null,
         selected: null
@@ -348,13 +362,20 @@ export default {
       })
 
     evt.$on('filter:render', this.onFilter)
+    xf.all.onChange(() => {
+      this.counts.all.filtered = xf.all.allFiltered().length
+    })
+    xf.subset.onChange(() => {
+      this.counts.subset.filtered = xf.subset.allFiltered().length
+    })
   },
   beforeDestroy () {
     evt.$off('filter:render', this.onFilter)
   },
   methods: {
     onFilter () {
-      this.filteredCount = getFilteredCount()
+      // this.counts.all.filtered = xf.all.allFiltered().length
+      // this.counts.subset.filtered = xf.subset.allFiltered().length
       evt.$emit('map:render')
     },
     destroyFilter (id) {
@@ -386,6 +407,7 @@ export default {
       this.$store.dispatch('selectThemeById', id)
         .then(() => {
           this.selected.theme = id
+          this.counts.all.total = xf.all.size()
           return Promise.resolve()
         })
         .then(() => {
@@ -425,9 +447,21 @@ export default {
 
       if (!feature || this.selected.feature === feature) {
         this.selected.feature = null
+        this.catchments.data = []
       } else {
         this.selected.feature = feature
+        this.catchments.data = xf.all.all()
+          .map((d, i) => ({
+            $index: i,
+            ...d
+          }))
+          .filter(d => d[this.theme.group.by] === feature.id)
+        xf.subset.remove()
+        xf.subset.add(this.catchments.data)
       }
+
+      this.counts.subset.total = this.catchments.data.length
+
       evt.$emit('map:render')
       evt.$emit('filter:render')
     },
@@ -445,6 +479,9 @@ export default {
       return `${this.theme.label}: ${label}`
     },
     getFill (feature) {
+      if (this.catchments.layer) {
+        return 'none'
+      }
       let value = null
       if (!this.catchments.layer || !this.selected.feature || this.selected.feature.id !== feature.id) {
         value = this.getValue(feature)
@@ -464,31 +501,23 @@ export default {
         type: 'geojson',
         url: `${this.theme.id}/${feature.id}.json`
       }
-      const data = xf.all.all()
-        .map((d, i) => ({
-          $index: i,
-          ...d
-        }))
-        .filter(d => d[this.theme.group.by] === feature.id)
 
       this.catchments.map.clear()
 
-      data.forEach((d) => {
+      this.catchments.data.forEach((d) => {
         this.catchments.map.set(d.id, d)
       })
-
-      xf.subset.remove()
-      xf.subset.add(data)
 
       evt.$emit('map:render')
       evt.$emit('filter:render')
     },
     getCatchmentValue (catchment) {
       const row = this.catchments.map.get(catchment.id)
-      return row && isFiltered(row.$index) ? row[this.variable.id] : null
+      return row ? row[this.variable.id] : null
     },
     getCatchmentFill (catchment) {
-      const value = this.getCatchmentValue(catchment)
+      const row = this.catchments.map.get(catchment.id)
+      const value = row && isFiltered(row.$index) ? row[this.variable.id] : null
       const scaled = value !== null ? this.variableScale(value) : null
       const color = scaled !== null ? this.colorScale(scaled) : 'none'
       return color
@@ -509,6 +538,7 @@ export default {
     clearCatchments () {
       this.catchments.layer = null
       this.catchments.map.clear()
+      xf.subset.remove()
       this.selectCatchment()
       evt.$emit('filter:clearSubset')
     }

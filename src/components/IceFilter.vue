@@ -214,8 +214,8 @@ export default {
 
         this.range = extent
 
-        this.all.dim.filterRange(extent)
-        this.subset.dim.filterRange(extent)
+        // this.all.dim.filterRange(extent)
+        // this.subset.dim.filterRange(extent)
       }
 
       evt.$emit('filter:render')
@@ -228,12 +228,12 @@ export default {
   },
   beforeDestroy () {
     evt.$off('filter:render', this.render)
-    this.all.group.dispose()
-    this.all.dim.filterAll()
-    this.all.dim.dispose()
-    this.subset.group.dispose()
-    this.subset.dim.filterAll()
-    this.subset.dim.dispose()
+    // this.all.group.dispose()
+    this.all.dim.filterAll().dispose()
+    // this.all.dim.dispose()
+    // this.subset.group.dispose()
+    this.subset.dim.filterAll().dispose()
+    // this.subset.dim.dispose()
     this.svg.select('g').remove()
     evt.$emit('filter:render')
   },
@@ -251,6 +251,12 @@ export default {
     },
     render () {
       // console.log(`filter(${this.variable.id}):render`)
+
+      if (this.range) {
+        this.all.dim.filterRange(this.range)
+        this.subset.dim.filterRange(this.range)
+      }
+
       const g = this.svg.select('g')
 
       this.yScale.domain([0, this.all.group.top(1)[0].value])
