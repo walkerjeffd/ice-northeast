@@ -10,7 +10,7 @@ import variableMixin from '@/mixins/variable'
 
 export default {
   name: 'IceMapLayer',
-  props: ['setBounds', 'layer', 'getFill', 'getValue', 'getLabel', 'selected'],
+  props: ['id', 'setBounds', 'layer', 'getFill', 'getValue', 'getLabel', 'selected'],
   mixins: [variableMixin],
   data () {
     return {
@@ -36,7 +36,7 @@ export default {
     }
   },
   mounted () {
-    // console.log('layer:mounted')
+    console.log(`map-layer(${this.id}):mounted`)
     evt.$on('map:zoom', this.resize)
     evt.$on('map:render', this.renderFill)
 
@@ -51,7 +51,7 @@ export default {
     this.setTipHtml()
   },
   beforeDestroy () {
-    // console.log('layer:beforeDestroy')
+    console.log(`map-layer(${this.id}):beforeDestroy`)
     evt.$off('map:zoom', this.resize)
     evt.$off('map:render', this.renderFill)
     this.tip.destroy()
@@ -61,15 +61,17 @@ export default {
   },
   watch: {
     variable () {
+      console.log(`map-layer(${this.id}):watch variable`)
       this.setTipHtml()
     },
     layer () {
-      // console.log('layer:watch layer', this.layer)
+      console.log(`map-layer(${this.id}):watch layer`)
       if (!this.layer) return
 
       return this.loadLayer(this.layer)
     },
     selected () {
+      console.log(`map-layer(${this.id}):watch selected`)
       this.renderSelected()
     }
   },
@@ -81,9 +83,8 @@ export default {
       `)
     },
     loadLayer (layer) {
-      // console.log('layer:loadLayer', layer)
+      console.log(`map-layer(${this.id}):loadLayer`, layer)
       if (!layer) return
-      // console.log('layer:loadLayer', layer, 'fetching')
 
       this.g
         .selectAll('path')
@@ -92,7 +93,7 @@ export default {
       return axios.get(`${layer.url}`)
         .then(response => response.data)
         .then((data) => {
-          // console.log('layer:loadLayer', layer, 'parsing')
+          // console.log(`map-layer(${this.id}):loadLayer`, layer, 'parsing')
           let geoJson = data
           if (layer.type === 'topojson') {
             geoJson = topojson.feature(data, data.objects[layer.object])
@@ -104,7 +105,7 @@ export default {
         })
     },
     resize () {
-      // console.log('layer:resize')
+      console.log(`map-layer(${this.id}):resize`)
       if (this.setBounds) {
         const bounds = this.path.bounds(this.data)
         this.$parent.$emit('resize', bounds)
@@ -113,7 +114,7 @@ export default {
       this.render()
     },
     render () {
-      // console.log('layer:render')
+      console.log(`map-layer(${this.id}):render`)
       if (!this.data) return
 
       const features = this.data.features || []
@@ -162,12 +163,13 @@ export default {
       paths.exit().remove()
     },
     renderFill () {
-      // console.log('layer:renderFill')
+      // console.log(`map-layer(${this.id}):renderFill`)
       this.g
         .selectAll('path')
         .style('fill', this.getFill)
     },
     renderSelected () {
+      console.log(`map-layer(${this.id}):renderSelected`)
       this.g
         .selectAll('path')
         .style('stroke', d => this.isSelected(d) ? 'red' : null)

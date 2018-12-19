@@ -156,9 +156,10 @@ export default {
 
     this.brush = d3.brushX()
       .extent([[0, 0], [this.width, this.height]])
-      .on('start brush end', () => {
+      // .on('start brush end', () => {
+      .on('brush end', () => {
+        // console.log(`filter(${this.variable.id}):on(brush)`, d3.event.selection, d3.event.type)
         const s = d3.event.selection
-        // console.log(`filter(${this.variable.id}):on(brush)`, s)
 
         if (s == null) {
           this.handle.attr('display', 'none')
@@ -173,7 +174,7 @@ export default {
             .attr('width', s[1] - s[0])
         }
 
-        setFilterRange(s)
+        setFilterRange(s, d3.event.type === 'end')
       })
 
     const gBrush = g.append('g').attr('class', 'brush').call(this.brush)
@@ -193,12 +194,14 @@ export default {
       })
       .attr('display', 'none')
 
-    const setFilterRange = throttle(100, (s) => {
-      // console.log(`filter(${vm.variable.id}):setFilterRange`, s)
+    const setFilterRange = throttle(100, (s, isEndEvent) => {
+      // console.log(`filter(${this.variable.id}):setFilterRange`, s)
       if (s === null) {
-        this.all.dim.filterAll()
-        this.subset.dim.filterAll()
         this.range = null
+
+        // only render if brush event is 'end', doesn't make sense to
+        // render if range is null and event is 'brush'
+        // if (isEndEvent) evt.$emit('filter:render')
       } else {
         const extent = s.map(this.xScale.invert)
 
@@ -213,12 +216,17 @@ export default {
         }
 
         this.range = extent
-
-        // this.all.dim.filterRange(extent)
-        // this.subset.dim.filterRange(extent)
       }
 
-      evt.$emit('filter:render')
+      if (this.range) {
+        this.all.dim.filterRange(this.range)
+        this.subset.dim.filterRange(this.range)
+      } else {
+        this.all.dim.filterAll()
+        this.subset.dim.filterAll()
+      }
+
+      if (this.range || isEndEvent) evt.$emit('filter:render')
     })
 
     evt.$on('filter:render', this.render)
@@ -227,13 +235,10 @@ export default {
     this.render()
   },
   beforeDestroy () {
+    console.log(`filter(${this.variable.id}):beforeDestroy`)
     evt.$off('filter:render', this.render)
-    // this.all.group.dispose()
     this.all.dim.filterAll().dispose()
-    // this.all.dim.dispose()
-    // this.subset.group.dispose()
     this.subset.dim.filterAll().dispose()
-    // this.subset.dim.dispose()
     this.svg.select('g').remove()
     evt.$emit('filter:render')
   },
@@ -250,13 +255,7 @@ export default {
       return path.join('')
     },
     render () {
-      // console.log(`filter(${this.variable.id}):render`)
-
-      if (this.range) {
-        this.all.dim.filterRange(this.range)
-        this.subset.dim.filterRange(this.range)
-      }
-
+      // console.log(`filter(${this.variable.id}):render`, this.range)
       const g = this.svg.select('g')
 
       this.yScale.domain([0, this.all.group.top(1)[0].value])
@@ -276,19 +275,19 @@ export default {
       }
     },
     reset () {
-      // console.log(`filter(${this.variable.id}):reset`)
+      console.log(`filter(${this.variable.id}):reset`)
       const gBrush = this.svg.select('g.brush')
       gBrush.call(this.brush.move, null)
-      this.all.dim.filterAll()
-      this.subset.dim.filterAll()
-      this.range = null
-      evt.$emit('filter:render')
+      // this.all.dim.filterAll()
+      // this.subset.dim.filterAll()
+      // this.range = null
     },
     destroy () {
-      // console.log(`filter(${this.variable.id}):destroy`)
+      console.log(`filter(${this.variable.id}):destroy`)
       this.$emit('destroy', this.variable.id)
     },
     clearSubset () {
+      console.log(`filter(${this.variable.id}):clearSubset`)
       this.subset.dim.filterAll()
       xf.subset.remove()
     }

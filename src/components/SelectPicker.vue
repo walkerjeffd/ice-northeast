@@ -20,6 +20,7 @@ export default {
   props: ['id', 'config', 'options', 'value', 'textField', 'valueField', 'title', 'multiple', 'groups'],
   watch: {
     value (value) {
+      console.log(`select-picker(${this.id}):watch value`, this.value)
       $(this.$el).selectpicker('val', value).selectpicker('refresh')
     }
   },

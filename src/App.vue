@@ -120,7 +120,7 @@
             </div>
             <div class="col-xs-9">
               <select-picker
-                id="color"
+                id="transform"
                 :config="{}"
                 :options="transform.options"
                 :value="transform.selected"
@@ -138,6 +138,7 @@
         <div class="ice-box">
           <div class="ice-box-title">Histograms and Filters</div>
           <select-picker
+            id="filters"
             :config="{}"
             :options="filterOptions"
             :value="selected.filters"
@@ -181,6 +182,7 @@
         v-if="selected.feature" />
       <ice-map :options="map.options">
         <ice-map-layer
+          id="huc"
           :layer="layer"
           :set-bounds="true"
           :get-fill="getFill"
@@ -189,6 +191,7 @@
           :selected="selected.feature"
           @click="selectFeature" />
         <ice-map-layer
+          id="catchment"
           v-if="catchments.layer"
           :layer="catchments.layer"
           :set-bounds="false"
@@ -212,7 +215,6 @@
 import axios from 'axios'
 import { mapGetters } from 'vuex'
 import * as d3 from 'd3'
-// import * as crossfilter from 'crossfilter2'
 
 import evt from './event-bus'
 
@@ -223,7 +225,6 @@ import IceLegend from './components/IceLegend.vue'
 import IceInfoBox from './components/IceInfoBox.vue'
 import IceFilter from './components/IceFilter.vue'
 import SelectPicker from './components/SelectPicker.vue'
-// import { getGroupByKey, addDim, getDim, removeDim, getData, isFiltered, getFilteredCount } from '@/store'
 import { xf, getGroupByKey, isFiltered } from '@/store'
 
 export default {
@@ -351,6 +352,7 @@ export default {
     }
   },
   created () {
+    console.log('app:created')
     this.catchments.map = new Map()
 
     axios.get('config.json')
@@ -370,24 +372,26 @@ export default {
     })
   },
   beforeDestroy () {
+    console.log('app:beforeDestroy')
     evt.$off('filter:render', this.onFilter)
   },
   methods: {
     onFilter () {
-      // this.counts.all.filtered = xf.all.allFiltered().length
-      // this.counts.subset.filtered = xf.subset.allFiltered().length
+      // console.log('app:onFilter')
       evt.$emit('map:render')
     },
     destroyFilter (id) {
-      // console.log('destroyFilter', id)
+      console.log('app:destroyFilter', id)
       const index = this.selected.filters.indexOf(id)
       this.selected.filters.splice(index, 1)
     },
     selectColor (color) {
+      console.log('app:selectColor', color)
       this.color.selected = color
       evt.$emit('map:render')
     },
     selectRegions (regions) {
+      console.log('app:selectRegions', regions)
       this.regionFilter.selected = regions
       if (this.regionFilter.dim) {
         this.regionFilter.dim.filterFunction(d => regions.includes(d))
@@ -395,10 +399,12 @@ export default {
       evt.$emit('filter:render')
     },
     selectTransform (transform) {
+      console.log('app:selectTransform', transform)
       this.transform.selected = transform
       evt.$emit('map:render')
     },
     selectTheme (id) {
+      console.log('app:selectTheme', id)
       this.loading = true
       if (this.regionFilter.dim) {
         this.regionFilter.dim.filterAll()
@@ -431,6 +437,7 @@ export default {
         })
     },
     selectVariable (id) {
+      console.log('app:selectVariable', id)
       this.$store.dispatch('selectVariableById', id)
         .then(() => {
           this.selected.variable = id
@@ -443,6 +450,7 @@ export default {
         })
     },
     selectFeature (feature) {
+      console.log('app:selectFeature', feature)
       this.clearCatchments()
 
       if (!feature || this.selected.feature === feature) {
@@ -451,24 +459,22 @@ export default {
       } else {
         this.selected.feature = feature
         this.catchments.data = xf.all.all()
-          .map((d, i) => ({
-            $index: i,
-            ...d
-          }))
           .filter(d => d[this.theme.group.by] === feature.id)
+          .slice()
         xf.subset.remove()
         xf.subset.add(this.catchments.data)
       }
 
       this.counts.subset.total = this.catchments.data.length
 
-      evt.$emit('map:render')
       evt.$emit('filter:render')
     },
     selectFilters (filters) {
+      console.log('app:selectFilters', filters)
       this.selected.filters = filters
     },
     zoomToFeature (feature) {
+      console.log('app:zoomToFeature', feature)
       evt.$emit('map:zoomTo', feature)
     },
     getFeatureLabel (feature) {
@@ -495,7 +501,7 @@ export default {
       return group ? group.mean : null
     },
     showCatchments (feature) {
-      // console.log('showCatchments()', feature)
+      console.log('app:showCatchments', feature)
       this.catchments.layer = {
         geometry: 'polygon',
         type: 'geojson',
@@ -503,13 +509,14 @@ export default {
       }
 
       this.catchments.map.clear()
-
       this.catchments.data.forEach((d) => {
         this.catchments.map.set(d.id, d)
       })
 
       evt.$emit('map:render')
       evt.$emit('filter:render')
+
+      this.zoomToFeature(feature)
     },
     getCatchmentValue (catchment) {
       const row = this.catchments.map.get(catchment.id)
@@ -526,7 +533,7 @@ export default {
       return `Catchment: ${catchment.id}`
     },
     selectCatchment (catchment) {
-      // console.log('selectCatchment', d)
+      console.log('app:selectCatchment', catchment)
       if (!catchment || this.catchments.selected === catchment) {
         this.catchments.selected = null
       } else {
@@ -536,11 +543,12 @@ export default {
       evt.$emit('map:render')
     },
     clearCatchments () {
+      console.log('app:clearCatchments')
       this.catchments.layer = null
       this.catchments.map.clear()
-      xf.subset.remove()
-      this.selectCatchment()
+      this.catchments.selected = null
       evt.$emit('filter:clearSubset')
+      xf.subset.remove()
     }
   }
 }

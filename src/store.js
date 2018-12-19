@@ -78,10 +78,11 @@ export const store = new Vuex.Store({
       return axios.get(`${theme.dataset.url}`)
         .then(response => response.data)
         .then((csv) => {
-          const data = d3.csvParse(csv, (d) => {
+          const data = d3.csvParse(csv, (d, i) => {
             theme.variables.forEach((v) => {
               d[v.id] = d[v.id] === theme.dataset.na_value ? null : +d[v.id]
             })
+            d.$index = i
             return d
           })
 
