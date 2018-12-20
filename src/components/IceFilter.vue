@@ -174,7 +174,27 @@ export default {
             .attr('width', s[1] - s[0])
         }
 
-        setFilterRange(s, d3.event.type === 'end')
+        if (s === null) {
+          this.range = null
+        } else {
+          const extent = s.map(this.xScale.invert)
+
+          if (extent[0] === this.xScale.domain()[0]) {
+            extent[0] = this.extent[0]
+          }
+
+          if (extent[1] === this.xScale.domain()[1]) {
+            extent[1] = this.extent[1]
+          } else {
+            extent[1] = extent[1] * 1.0000001
+          }
+
+          this.range = extent
+        }
+
+        updateFilters()
+
+        if (this.range || (d3.event.type === 'end')) evt.$emit('filter:render')
       })
 
     const gBrush = g.append('g').attr('class', 'brush').call(this.brush)
@@ -194,30 +214,8 @@ export default {
       })
       .attr('display', 'none')
 
-    const setFilterRange = throttle(100, (s, isEndEvent) => {
-      // console.log(`filter(${this.variable.id}):setFilterRange`, s)
-      if (s === null) {
-        this.range = null
-
-        // only render if brush event is 'end', doesn't make sense to
-        // render if range is null and event is 'brush'
-        // if (isEndEvent) evt.$emit('filter:render')
-      } else {
-        const extent = s.map(this.xScale.invert)
-
-        if (extent[0] === this.xScale.domain()[0]) {
-          extent[0] = this.extent[0]
-        }
-
-        if (extent[1] === this.xScale.domain()[1]) {
-          extent[1] = this.extent[1]
-        } else {
-          extent[1] = extent[1] * 1.0000001
-        }
-
-        this.range = extent
-      }
-
+    const updateFilters = throttle(100, () => {
+      // console.log(`filter(${this.variable.id}):updateFilters`, s)
       if (this.range) {
         this.all.dim.filterRange(this.range)
         this.subset.dim.filterRange(this.range)
@@ -225,8 +223,6 @@ export default {
         this.all.dim.filterAll()
         this.subset.dim.filterAll()
       }
-
-      if (this.range || isEndEvent) evt.$emit('filter:render')
     })
 
     evt.$on('filter:render', this.render)
