@@ -20,38 +20,22 @@
         </button>
       </div>
     </div>
-    <modal :show="showData" @close="showData = false">
+    <ice-modal :show="showData" @close="showData = false">
       <span slot="title">Selected Feature</span>
       <div slot="body">
         <p>
           <strong>ID: {{ selected.id }}</strong>
         </p>
-        <hr>
-        <!-- <div v-for="(table, index) in tables" :key="index">
-          <strong>{{ table.label }}</strong>
-          <table class="table table-condensed table-striped" style="width:100%">
-            <tbody>
-              <tr v-for="(row, index) in table.rows" :key="index">
-                <td class="col-md-10">{{ row.label }}</td>
-                <td class="col-md-2 text-right">{{ row.value }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div> -->
       </div>
-    </modal>
+    </ice-modal>
   </div>
 </template>
 
 <script>
-// import { mapGetters } from 'vuex'
-// import * as d3 from 'd3'
-
-import Modal from '@/components/Modal'
-// import { valuesById } from '@/lib/crossfilter'
+import { IceModal } from 'ice-components'
 
 export default {
-  components: { Modal },
+  components: { IceModal },
   props: ['selected', 'getLabel'],
   data () {
     return {
@@ -59,33 +43,6 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters(['variables', 'variableGroups', 'variableById', 'theme']),
-    // values () {
-    //   return valuesById(this.selected.properties.id)
-    // },
-    // label () {
-    //   return this.values.label
-    // },
-    // area () {
-    //   return d3.format(',.1f')(this.values[this.theme.dataset.columns.area])
-    // },
-    // tables () {
-    //   return this.variableGroups.map((group) => {
-    //     const rows = []
-    //     group.variables.forEach((variableId) => {
-    //       const variable = this.variableById(variableId)
-    //       const value = this.values[variable.id] === null ? 'N/A' : d3.format(variable.formats.text)(this.values[variable.id])
-    //       rows.push({
-    //         label: variable.label,
-    //         value
-    //       })
-    //     })
-    //     return {
-    //       label: group.label,
-    //       rows
-    //     }
-    //   })
-    // }
   },
   methods: {
     unselect () {

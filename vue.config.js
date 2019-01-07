@@ -4,6 +4,7 @@ module.exports = {
   baseUrl: process.env.NODE_ENV === 'production'
     ? '/'
     : '/',
+  chainWebpack: config => config.resolve.symlinks(false),
   configureWebpack: {
     plugins: [
       new webpack.ProvidePlugin({

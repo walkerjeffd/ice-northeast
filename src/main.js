@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import axios from 'axios'
 
-import 'bootstrap/dist/css/bootstrap.min.css'
-
 import App from './App.vue'
 import { store } from './store'
 import config from './config'

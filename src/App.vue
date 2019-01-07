@@ -20,7 +20,7 @@
               <div class="ice-box-label">Resolution</div>
             </div>
             <div class="col-xs-9">
-              <select-picker
+              <ice-select
                 id="theme"
                 :config="{}"
                 :options="themes"
@@ -40,7 +40,7 @@
               <div class="ice-box-label">States</div>
             </div>
             <div class="col-xs-9">
-              <select-picker
+              <ice-select
                 id="region"
                 :config="{
                   actionsBox: true,
@@ -65,7 +65,7 @@
               <div class="ice-box-label">Variable</div>
             </div>
             <div class="col-xs-9">
-              <select-picker
+              <ice-select
                 id="variable"
                 :config="{}"
                 :options="variableOptions"
@@ -101,7 +101,7 @@
               <div class="ice-box-label">Colors</div>
             </div>
             <div class="col-xs-9">
-              <select-picker
+              <ice-select
                 id="color"
                 :config="{}"
                 :options="color.options"
@@ -119,7 +119,7 @@
               <div class="ice-box-label">Transform</div>
             </div>
             <div class="col-xs-9">
-              <select-picker
+              <ice-select
                 id="transform"
                 :config="{}"
                 :options="transform.options"
@@ -137,7 +137,7 @@
       <div class="ice-right-sidebar">
         <div class="ice-box">
           <div class="ice-box-title">Histograms and Filters</div>
-          <select-picker
+          <ice-select
             id="filters"
             :config="{}"
             :options="filterOptions"
@@ -216,27 +216,21 @@ import axios from 'axios'
 import { mapGetters } from 'vuex'
 import * as d3 from 'd3'
 
-import evt from './event-bus'
+import { IceFilter, IceHeader, IceLegend, IceSelect, IceMap, IceMapLayer, EventBus as evt, xf, getGroupByKey, isFiltered } from 'ice-components'
 
-import IceHeader from './components/IceHeader.vue'
-import IceMap from './components/IceMap.vue'
-import IceMapLayer from './components/IceMapLayer.vue'
-import IceLegend from './components/IceLegend.vue'
 import IceInfoBox from './components/IceInfoBox.vue'
-import IceFilter from './components/IceFilter.vue'
-import SelectPicker from './components/SelectPicker.vue'
-import { xf, getGroupByKey, isFiltered } from '@/store'
 
 export default {
   name: 'app',
   components: {
+    IceFilter,
     IceHeader,
+    IceLegend,
     IceMap,
     IceMapLayer,
-    IceLegend,
-    IceInfoBox,
-    IceFilter,
-    SelectPicker
+    IceSelect,
+
+    IceInfoBox
   },
   data () {
     return {
