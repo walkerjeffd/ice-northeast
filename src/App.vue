@@ -167,7 +167,8 @@
               v-for="variable in filterVariables"
               :key="variable.id"
               :variable="variable"
-              width="360"
+              :width="360"
+              mean-line
               @destroy="destroyFilter"
             />
           </div>
@@ -180,7 +181,7 @@
         @unselect="selectFeature"
         @showCatchments="showCatchments"
         v-if="selected.feature" />
-      <ice-map :options="map.options">
+      <ice-map :options="map.options" :overlays="map.overlays">
         <ice-map-layer
           id="huc"
           :layer="layer"
@@ -220,6 +221,8 @@ import { IceFilter, IceHeader, IceLegend, IceSelect, IceMap, IceMapLayer, EventB
 
 import IceInfoBox from './components/IceInfoBox.vue'
 
+require('webpack-jquery-ui/slider')
+
 export default {
   name: 'app',
   components: {
@@ -241,7 +244,33 @@ export default {
           zoom: 6,
           maxZoom: 18,
           minZoom: 5
-        }
+        },
+        overlays: [
+          {
+            url: 'http://ecosheds.org:8080/geoserver/wms',
+            label: 'Major Streams',
+            layer: 'sheds:flowlines_strahler_3',
+            visible: true
+          }, {
+            url: 'http://ecosheds.org:8080/geoserver/wms',
+            label: 'Minor Streams',
+            layer: 'sheds:detailed_flowlines',
+            minZoom: 10
+          }, {
+            url: 'http://ecosheds.org:8080/geoserver/wms',
+            label: 'NHD Waterbodies',
+            layer: 'sheds:waterbodies'
+          }, {
+            url: 'http://ecosheds.org:8080/geoserver/wms',
+            label: 'HUC8 Boundaries',
+            layer: 'sheds:wbdhu8'
+          }, {
+            url: 'http://ecosheds.org:8080/geoserver/wms',
+            label: 'HUC12 Boundaries',
+            layer: 'sheds:wbdhu12',
+            minZoom: 10
+          }
+        ]
       },
       show: {
         legendSettings: false
