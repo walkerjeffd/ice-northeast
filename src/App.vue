@@ -22,7 +22,6 @@
             <div class="col-xs-9">
               <ice-select
                 id="theme"
-                :config="{}"
                 :options="themes"
                 :value="selected.theme"
                 :multiple="false"
@@ -42,12 +41,7 @@
             <div class="col-xs-9">
               <ice-select
                 id="region"
-                :config="{
-                  actionsBox: true,
-                  selectedTextFormat: 'count',
-                  countSelectedText: '{0} states selected',
-                  dropupAuto: false
-                }"
+                :config="regionFilter.config"
                 :options="regionFilter.options"
                 :value="regionFilter.selected"
                 :multiple="true"
@@ -67,10 +61,10 @@
             <div class="col-xs-9">
               <ice-select
                 id="variable"
-                :config="{}"
                 :options="variableOptions"
                 :value="selected.variable"
                 :multiple="false"
+                grouped
                 @input="selectVariable"
                 value-field="id"
                 text-field="label"
@@ -103,7 +97,6 @@
             <div class="col-xs-9">
               <ice-select
                 id="color"
-                :config="{}"
                 :options="color.options"
                 :value="color.selected"
                 :multiple="false"
@@ -121,7 +114,6 @@
             <div class="col-xs-9">
               <ice-select
                 id="transform"
-                :config="{}"
                 :options="transform.options"
                 :value="transform.selected"
                 :multiple="false"
@@ -139,10 +131,10 @@
           <div class="ice-box-title">Histograms and Filters</div>
           <ice-select
             id="filters"
-            :config="{}"
             :options="filterOptions"
             :value="selected.filters"
             :multiple="true"
+            grouped
             @input="selectFilters"
             value-field="id"
             text-field="label"
@@ -293,6 +285,12 @@ export default {
         selected: 'linear'
       },
       regionFilter: {
+        config: {
+          actionsBox: true,
+          selectedTextFormat: 'count',
+          countSelectedText: '{0} states selected',
+          dropupAuto: false
+        },
         options: [
           { id: 'CT', label: 'Connecticut' },
           { id: 'DE', label: 'Delaware' },
