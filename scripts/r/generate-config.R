@@ -1,13 +1,16 @@
 # generate ICE config file
 
-library(tidyverse)
-library(jsonlite)
+cat("generate-dataset: starting\n")
+
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(jsonlite))
 
 config <- config::get()
 
 
 # variables ---------------------------------------------------------------
 
+cat("loading variables...")
 df_variables <- read_csv("../variables.csv", col_types = cols(
   default = col_logical(),
   id = col_character(),
@@ -36,13 +39,15 @@ variables <- transpose(df_variables) %>%
       scale = list(
         domain = c(x$scale_domain_min, x$scale_domain_max),
         transform = x$scale_transform
-      )
+      ),
+      group = x$group
     )
   })
-
+cat("done\n")
 
 # themes ------------------------------------------------------------------
 
+cat("loading themes...")
 df_themes <- read_csv("../themes.csv", col_types = cols(
   .default = col_character(),
   default = col_logical()
@@ -71,9 +76,14 @@ themes <- transpose(df_themes) %>%
       variables = variables
     )
   })
-
+cat("done\n")
 
 # export ------------------------------------------------------------------
 
+filename <- "../../data/ice-sheds.json"
+cat(glue::glue("saving {filename}..."))
 list(themes = themes)%>%
-  write_json(path = "../../data/ice-sheds.json", auto_unbox = TRUE, pretty = TRUE, na = "null")
+  write_json(path = filename, auto_unbox = TRUE, pretty = TRUE, na = "null")
+cat("done\n")
+
+cat("generate-config: finished\n")

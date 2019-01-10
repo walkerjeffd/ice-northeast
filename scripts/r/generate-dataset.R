@@ -1,6 +1,8 @@
 # generate ICE input dataset
 
-library(tidyverse)
+cat("generate-dataset: starting\n")
+
+suppressPackageStartupMessages(library(tidyverse))
 
 config <- config::get()
 
@@ -21,6 +23,7 @@ if(!dir.exists(data_directory)) {
 
 # covariates --------------------------------------------------------------
 
+cat("fetching covariates...")
 # local
 df_cov_local <- tbl(con, "covariates") %>%
   select(featureid, zone, riparian_distance_ft, variable, value) %>%
@@ -57,21 +60,23 @@ df_cov_upstream <- tbl(con, "covariates") %>%
 
 # merge
 df_cov <- full_join(df_cov_local, df_cov_upstream, by = "featureid")
-
+cat("done\n")
 
 # temp-model --------------------------------------------------------------
 
+cat("fetching temp-model predictions...")
 df_temp <- tbl(con, "temp_model") %>%
   select(featureid, version, variable, value) %>%
   filter(version == config$`temp-model`$version) %>%
   collect() %>%
   select(-version) %>%
   spread(variable, value) %>%
-  select(featureid, mean_summer_temp, n_day_temp_t_18, n_day_temp_t_22)
-
+  select(featureid, mean_summer_temp, n_day_temp_gt_18, n_day_temp_gt_22)
+cat("done\n")
 
 # bto-model ---------------------------------------------------------------
 
+cat("fetching bto-model predictions...")
 df_bto <- tbl(con, "bto_model") %>%
   select(featureid, version, variable, value) %>%
   filter(version == config$`bto-model`$version) %>%
@@ -79,17 +84,19 @@ df_bto <- tbl(con, "bto_model") %>%
   select(-version) %>%
   spread(variable, value) %>%
   select(featureid, occ_current, occ_temp7p20, occ_temp7p40, occ_temp7p60, max_temp7p_occ30, max_temp7p_occ50, max_temp7p_occ70)
-
+cat("done\n")
 
 # state -------------------------------------------------------------------
 
+cat("fetching states...")
 df_state <- tbl(con, "catchment_state") %>%
   select(featureid, state = stusps) %>%
   collect()
-
+cat("done\n")
 
 # huc ---------------------------------------------------------------------
 
+cat("fetching hucs...")
 df_huc <- tbl(con, "catchment_huc12") %>%
   select(featureid, huc12) %>%
   collect() %>%
@@ -98,10 +105,11 @@ df_huc <- tbl(con, "catchment_huc12") %>%
     huc8 = str_sub(huc12, 1, 8),
     huc10 = str_sub(huc12, 1, 10)
   )
-
+cat("done\n")
 
 # merge -------------------------------------------------------------------
 
+cat("merging datasets...")
 df <- df_huc %>%
   full_join(df_state, by = "featureid") %>%
   full_join(df_cov, by = "featureid") %>%
@@ -111,7 +119,7 @@ df <- df_huc %>%
     state %in% c("ME", "NH","VT", "MA", "RI", "CT", "NY", "NJ", "PA", "DE", "MD", "DC", "WV", "VA")
   ) %>%
   rename(id = featureid)
-
+cat("done\n")
 
 # export ------------------------------------------------------------------
 
@@ -135,3 +143,4 @@ for (huc2_id in huc2_ids) {
     write_csv(file.path(data_directory, glue::glue("{id}-{huc2_id}.csv")), na = "")
 }
 
+cat("generate-dataset: finished\n")
