@@ -378,7 +378,7 @@ export default {
     console.log('app:created')
     this.catchments.map = new Map()
 
-    axios.get('config.json')
+    axios.get('ice-sheds.json')
       .then(response => response.data)
       .then(config => this.$store.dispatch('loadConfig', config))
       .then(config => {

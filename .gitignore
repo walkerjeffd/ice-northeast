@@ -22,3 +22,6 @@ yarn-error.log*
 
 data/**/*.csv
 data/**/*.json
+.Rproj.user
+
+scripts/config.yml

@@ -3,6 +3,8 @@ const pgp = require('pg-promise')()
 
 const db = pgp('postgres://jeff@trout.local/sheds')
 
+const dataDirectory = '../../data'
+
 const fetch = (huc6) => {
   console.log('fetch', huc6)
   return db.any(`
@@ -29,7 +31,13 @@ const fetch = (huc6) => {
 }
 
 const saveFile = (huc) => {
-  const filename = `huc6/${huc.id}.json`
+  const filename = `${dataDirectory}/huc6/${huc.id}.json`
+
+  if (!fs.existsSync(`${dataDirectory}/huc6`)) {
+    console.log(`creating directory: ${dataDirectory}/huc6`)
+    fs.mkdirSync(`${dataDirectory}/huc6`)
+  }
+
   console.log(`saving ${filename}`)
   fs.writeFileSync(filename, JSON.stringify(huc.json))
   return Promise.resolve(filename)
