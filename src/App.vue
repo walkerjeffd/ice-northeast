@@ -215,6 +215,22 @@ import IceInfoBox from './components/IceInfoBox.vue'
 
 require('webpack-jquery-ui/slider')
 
+const filterPercentVariable = {
+  id: '$filter_percent',
+  label: '% Area Filtered',
+  map: true,
+  filter: false,
+  formats: {
+    axis: '.0%',
+    value: '.1%'
+  },
+  scale: {
+    domain: [0, 1],
+    transform: 'linear'
+  },
+  group: 'Filter Statistics'
+}
+
 export default {
   name: 'app',
   components: {
@@ -334,7 +350,8 @@ export default {
   computed: {
     ...mapGetters(['themes', 'theme', 'layer', 'variables', 'variable', 'stats']),
     variableOptions () {
-      return this.variables.filter(v => v.map)
+      const variables = this.variables.filter(v => v.map)
+      return [filterPercentVariable, ...variables]
     },
     filterOptions () {
       return this.variables.filter(v => v.filter)
@@ -459,7 +476,15 @@ export default {
     },
     selectVariable (id) {
       console.log('app:selectVariable', id)
-      this.$store.dispatch('selectVariableById', id)
+      let promise
+
+      if (id === filterPercentVariable.id) {
+        promise = this.$store.dispatch('selectVariableFilterPercent', filterPercentVariable)
+      } else {
+        promise = this.$store.dispatch('selectVariableById', id)
+      }
+
+      promise
         .then(() => {
           this.selected.variable = id
         })
