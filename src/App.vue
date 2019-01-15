@@ -3,16 +3,24 @@
     <ice-header title="SHEDS Northeast" />
     <div class="ice-container">
       <div class="ice-left-sidebar">
-        <div class="ice-box">
-          <button class="btn btn-default" disabled>
-            <i class="fa fa-question-circle"/> About ICE
-          </button>
-          <button class="btn btn-default" disabled>
-            <i class="fa fa-table"/> About the Data
-          </button>
-          <button class="btn btn-default" disabled>
-            <i class="fa fa-envelope"/> Contact Us
-          </button>
+        <div class="ice-box" style="text-align:right">
+          <div class="btn-group btn-group-justified btn-group-xs">
+            <a class="btn btn-default" @click="modals.about = true">
+              <i class="fa fa-info-circle"/> About
+            </a>
+            <a class="btn btn-default" @click="modals.guide = true">
+              <i class="fa fa-book"/> User Guide
+            </a>
+            <a class="btn btn-default" @click="modals.dataset = true">
+              <i class="fa fa-table"/> Datasets
+            </a>
+            <a class="btn btn-default" @click="modals.download = true">
+              <i class="fa fa-download"/> Download
+            </a>
+            <a class="btn btn-default" @click="modals.contact = true">
+              <i class="fa fa-envelope"/> Contact
+            </a>
+          </div>
         </div>
         <div class="ice-box">
           <div class="row">
@@ -201,6 +209,42 @@
         <div><i class="fa fa-spinner fa-spin fa-5x fa-fw" /></div>
       </div>
     </div>
+    <ice-modal
+      :show="modals.about"
+      @close="modals.about = false"
+      size="lg">
+      <span slot="title">About the Interactive Catchment Explorer</span>
+      <div slot="body">
+        <about-modal></about-modal>
+      </div>
+    </ice-modal>
+    <ice-modal
+      :show="modals.guide"
+      @close="modals.guide = false"
+      size="lg">
+      <span slot="title">User Guide</span>
+      <div slot="body">
+        <guide-modal></guide-modal>
+      </div>
+    </ice-modal>
+    <ice-modal
+      :show="modals.dataset"
+      @close="modals.dataset = false"
+      size="lg">
+      <span slot="title">Datasets</span>
+      <div slot="body">
+        <dataset-modal></dataset-modal>
+      </div>
+    </ice-modal>
+    <ice-modal
+      :show="modals.contact"
+      @close="modals.contact = false"
+      size="lg">
+      <span slot="title">Contact Us</span>
+      <div slot="body">
+        <contact-modal></contact-modal>
+      </div>
+    </ice-modal>
   </div>
 </template>
 
@@ -209,9 +253,13 @@ import axios from 'axios'
 import { mapGetters } from 'vuex'
 import * as d3 from 'd3'
 
-import { IceFilter, IceHeader, IceLegend, IceSelect, IceMap, IceMapLayer, EventBus as evt, xf, getGroupByKey, isFiltered } from 'ice-components'
+import { IceFilter, IceHeader, IceLegend, IceSelect, IceMap, IceMapLayer, IceModal, EventBus as evt, xf, getGroupByKey, isFiltered } from 'ice-components'
 
 import IceInfoBox from './components/IceInfoBox.vue'
+import AboutModal from './components/AboutModal.vue'
+import GuideModal from './components/GuideModal.vue'
+import DatasetModal from './components/DatasetModal.vue'
+import ContactModal from './components/ContactModal.vue'
 
 require('webpack-jquery-ui/slider')
 
@@ -239,13 +287,25 @@ export default {
     IceLegend,
     IceMap,
     IceMapLayer,
+    IceModal,
     IceSelect,
 
-    IceInfoBox
+    IceInfoBox,
+    AboutModal,
+    GuideModal,
+    DatasetModal,
+    ContactModal
   },
   data () {
     return {
       loading: true,
+      modals: {
+        about: false,
+        guide: false,
+        dataset: false,
+        download: false,
+        contact: false
+      },
       map: {
         options: {
           center: [42, -74],
@@ -444,10 +504,15 @@ export default {
     selectTheme (id) {
       console.log('app:selectTheme', id)
       this.loading = true
+
+      this.clearCatchments()
+      this.selected.feature = null
+
       if (this.regionFilter.dim) {
         this.regionFilter.dim.filterAll()
         this.regionFilter.dim.dispose()
       }
+
       this.$store.dispatch('selectThemeById', id)
         .then(() => {
           this.selected.theme = id
@@ -552,26 +617,25 @@ export default {
         geometry: 'polygon',
         type: 'topojson',
         object: 'catchments',
-        url: `${this.theme.id}/${feature.id}.json`
+        url: `catchments/${this.theme.id}/${feature.id}.json`
       }
 
       this.catchments.map.clear()
       this.catchments.data.forEach((d) => {
         this.catchments.map.set(d.id, d)
       })
-
       evt.$emit('map:render')
       evt.$emit('filter:render')
 
       this.zoomToFeature(feature)
     },
     getCatchmentValue (catchment) {
-      const row = this.catchments.map.get(catchment.id)
-      return row ? row[this.variable.id] : null
+      return this.catchments.map.has(catchment.id) ? this.catchments.map.get(catchment.id)[this.variable.id] : null
     },
     getCatchmentFill (catchment) {
+      if (!this.catchments.map.has(catchment.id)) return 'none'
       const row = this.catchments.map.get(catchment.id)
-      const value = row && isFiltered(row.$index) ? row[this.variable.id] : null
+      const value = row !== null && isFiltered(row.$index) ? row[this.variable.id] : null
       const scaled = value !== null ? this.variableScale(value) : null
       const color = scaled !== null ? this.colorScale(scaled) : 'none'
       return color
@@ -594,8 +658,10 @@ export default {
       this.catchments.layer = null
       this.catchments.map.clear()
       this.catchments.selected = null
+      this.catchments.data = []
       evt.$emit('filter:clearSubset')
       xf.subset.remove()
+      this.counts.subset.total = 0
     }
   }
 }
