@@ -550,7 +550,8 @@ export default {
       console.log('app:showCatchments', feature)
       this.catchments.layer = {
         geometry: 'polygon',
-        type: 'geojson',
+        type: 'topojson',
+        object: 'catchments',
         url: `${this.theme.id}/${feature.id}.json`
       }
 

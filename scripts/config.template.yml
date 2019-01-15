@@ -1,0 +1,11 @@
+default:
+  db:
+    dbname:
+    host:
+    port:
+    user:
+    password:
+  temp-model:
+    version: "X.Y"
+  bto-model:
+    version: "X.Y"

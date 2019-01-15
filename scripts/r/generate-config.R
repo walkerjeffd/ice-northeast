@@ -11,7 +11,7 @@ config <- config::get()
 # variables ---------------------------------------------------------------
 
 cat("loading variables...")
-df_variables <- read_csv("../variables.csv", col_types = cols(
+df_variables <- read_csv("variables.csv", col_types = cols(
   default = col_logical(),
   id = col_character(),
   label = col_character(),
@@ -48,7 +48,7 @@ cat("done\n")
 # themes ------------------------------------------------------------------
 
 cat("loading themes...")
-df_themes <- read_csv("../themes.csv", col_types = cols(
+df_themes <- read_csv("themes.csv", col_types = cols(
   .default = col_character(),
   default = col_logical()
 ))
@@ -80,7 +80,7 @@ cat("done\n")
 
 # export ------------------------------------------------------------------
 
-filename <- "../../data/ice-sheds.json"
+filename <- "config/ice-sheds.json"
 cat(glue::glue("saving {filename}..."))
 list(themes = themes)%>%
   write_json(path = filename, auto_unbox = TRUE, pretty = TRUE, na = "null")

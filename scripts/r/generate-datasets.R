@@ -1,6 +1,6 @@
-# generate ICE input dataset
+# generate ICE input datasets
 
-cat("generate-dataset: starting\n")
+cat("generate-datasets: starting\n")
 
 suppressPackageStartupMessages(library(tidyverse))
 
@@ -14,12 +14,6 @@ con <- DBI::dbConnect(
   user = config$db$user,
   password = config$db$password
 )
-
-data_directory <- "../../data/"
-
-if(!dir.exists(data_directory)) {
-  stop(glue::glue("Data directory not found ({data_directory})"))
-}
 
 # covariates --------------------------------------------------------------
 
@@ -129,7 +123,7 @@ for (id in c("huc6", "huc8", "huc10")) {
   cat(glue::glue("saving {id}.csv"), "\n")
   df %>%
     select_(.dots = setdiff(names(df), setdiff(huc_columns, id))) %>%
-    write_csv(file.path(data_directory, glue::glue("{id}.csv")), na = "")
+    write_csv(file.path('datasets', glue::glue("{id}.csv")), na = "")
 }
 
 id <- "huc12"
@@ -140,7 +134,7 @@ for (huc2_id in huc2_ids) {
   df %>%
     filter(str_sub(df$huc12, 1, 2) == huc2_id) %>%
     select_(.dots = setdiff(names(df), setdiff(huc_columns, id))) %>%
-    write_csv(file.path(data_directory, glue::glue("{id}-{huc2_id}.csv")), na = "")
+    write_csv(file.path('datasets', glue::glue("{id}-{huc2_id}.csv")), na = "")
 }
 
-cat("generate-dataset: finished\n")
+cat("generate-datasets: finished\n")
