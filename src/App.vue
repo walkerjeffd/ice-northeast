@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="full">
-    <ice-header title="SHEDS Northeast" />
+    <ice-header title="North Atlantic" />
     <div class="ice-container">
       <div class="ice-left-sidebar">
         <div class="ice-box" style="text-align:right">
@@ -424,13 +424,14 @@ export default {
     variableScale () {
       if (!this.variable) return d3.scaleLinear()
 
-      const domain = this.variable.scale.domain
+      const domain = this.variable.scale.domain.slice(0)
 
       let scale
       switch (this.transform.selected) {
         case 'log':
           scale = d3.scaleLog()
-          if (domain[0] <= 0) domain[0] = 0.1
+          const positiveValues = xf.all.all().map(d => d[this.variable.id]).filter(d => d > 0).sort()
+          if (domain[0] <= 0) domain[0] = +d3.quantile(positiveValues, 0.05).toPrecision(1)
           break
         case 'linear':
           scale = d3.scaleLinear()
