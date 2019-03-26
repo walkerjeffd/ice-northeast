@@ -618,7 +618,7 @@ export default {
         geometry: 'polygon',
         type: 'topojson',
         object: 'catchments',
-        url: `catchments/${this.theme.id}/${feature.id}.json`
+        url: `${this.theme.id}/catchments/${feature.id}.json`
       }
 
       this.catchments.map.clear()

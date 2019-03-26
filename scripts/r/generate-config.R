@@ -51,7 +51,11 @@ cat("loading themes...")
 df_themes <- read_csv("themes.csv", col_types = cols(
   .default = col_character(),
   default = col_logical()
-))
+)) %>%
+  mutate(
+    dataset_url = str_c(id, "/dataset.csv"),
+    layer_url = str_c(id, "/layer.json")
+  )
 
 themes <- transpose(df_themes) %>%
   lapply(function (x) {
@@ -80,7 +84,7 @@ cat("done\n")
 
 # export ------------------------------------------------------------------
 
-filename <- "config/ice-sheds.json"
+filename <- "../../data/ice-sheds.json"
 cat(glue::glue("saving {filename}..."))
 list(themes = themes)%>%
   write_json(path = filename, auto_unbox = TRUE, pretty = TRUE, na = "null")

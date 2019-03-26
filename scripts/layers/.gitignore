@@ -1,5 +1,2 @@
 !shp/.gitkeep
 shp/*.*
-
-!topojson/.gitkeep
-topojson/*.*

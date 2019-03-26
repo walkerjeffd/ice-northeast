@@ -33,7 +33,7 @@ const promises = Promise.mapSeries(hucLevels, (hucLevel) => {
       return simplified
     })
     .then((results) => {
-      const filename = `topojson/${hucName}.json`
+      const filename = `../../${hucName}/layer.json`
 
       console.log(`saving ${filename}`)
 
@@ -71,7 +71,7 @@ promises
           return simplified
         })
         .then((results) => {
-          const filename = `topojson/${hucName}-${region}.json`
+          const filename = `../../${hucName}-${region}/layer.json`
 
           console.log(`saving ${filename}`)
 

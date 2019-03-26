@@ -120,21 +120,23 @@ cat("done\n")
 huc_columns <- tidyselect::vars_select(names(df), starts_with("huc"))
 
 for (id in c("huc6", "huc8", "huc10")) {
-  cat(glue::glue("saving {id}.csv"), "\n")
+  fname <- glue::glue("../../data/{id}/dataset.csv")
+  cat("saving: ", fname, "\n")
   df %>%
-    select_(.dots = setdiff(names(df), setdiff(huc_columns, id))) %>%
-    write_csv(file.path('datasets', glue::glue("{id}.csv")), na = "")
+    select(!!setdiff(names(df), setdiff(huc_columns, id))) %>%
+    write_csv(fname, na = "")
 }
 
 id <- "huc12"
 huc2_ids <- str_sub(df$huc12, 1, 2) %>% unique() %>% sort()
 
 for (huc2_id in huc2_ids) {
-  cat(glue::glue("saving {id}-{huc2_id}.csv"), "\n")
+  fname <- glue::glue("../../data/{id}-{huc2_id}/dataset.csv")
+  cat("saving: ", fname, "\n")
   df %>%
     filter(str_sub(df$huc12, 1, 2) == huc2_id) %>%
-    select_(.dots = setdiff(names(df), setdiff(huc_columns, id))) %>%
-    write_csv(file.path('datasets', glue::glue("{id}-{huc2_id}.csv")), na = "")
+    select(!!setdiff(names(df), setdiff(huc_columns, id))) %>%
+    write_csv(fname, na = "")
 }
 
 cat("generate-datasets: finished\n")

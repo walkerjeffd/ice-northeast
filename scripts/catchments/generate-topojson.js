@@ -65,11 +65,11 @@ function saveCatchmentsTopojson (hucLevel, id, data, region) {
   if (region) {
     hucName = `${hucName}-${region}`
   }
-  const filename = `topojson/${hucName}/${id}.json`
+  const filename = `../../data/${hucName}/catchments/${id}.json`
 
-  if (!fs.existsSync(`topojson/${hucName}`)) {
-    console.log(`creating directory: topojson/${hucName}`)
-    fs.mkdirSync(`topojson/${hucName}`)
+  if (!fs.existsSync(`../../data/${hucName}/catchments`)) {
+    console.log(`creating directory: ../../data/${hucName}/catchments`)
+    fs.mkdirSync(`../../data/${hucName}/catchments`)
   }
 
   console.log(`saving ${filename}`)
