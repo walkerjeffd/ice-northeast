@@ -174,13 +174,17 @@
           </div>
         </div>
       </div>
-      <ice-info-box
+      <selected-huc-box
         :selected="selected.feature"
-        :get-label="getFeatureLabel"
         @zoomTo="zoomToFeature"
         @unselect="selectFeature"
         @showCatchments="showCatchments"
         v-if="selected.feature" />
+      <selected-catchment-box
+        :selected="catchments.selected"
+        @zoomTo="zoomToFeature"
+        @unselect="selectCatchment"
+        v-if="catchments.selected" />
       <ice-map :options="map.options" :overlays="map.overlays">
         <ice-map-layer
           id="huc"
@@ -255,7 +259,8 @@ import * as d3 from 'd3'
 
 import { IceFilter, IceHeader, IceLegend, IceSelect, IceMap, IceMapLayer, IceModal, EventBus as evt, xf, getGroupByKey, isFiltered } from 'ice-components'
 
-import IceInfoBox from './components/IceInfoBox.vue'
+import SelectedHucBox from './components/SelectedHucBox.vue'
+import SelectedCatchmentBox from './components/SelectedCatchmentBox.vue'
 import AboutModal from './components/AboutModal.vue'
 import GuideModal from './components/GuideModal.vue'
 import DatasetModal from './components/DatasetModal.vue'
@@ -290,7 +295,8 @@ export default {
     IceModal,
     IceSelect,
 
-    IceInfoBox,
+    SelectedHucBox,
+    SelectedCatchmentBox,
     AboutModal,
     GuideModal,
     DatasetModal,
