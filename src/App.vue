@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="full">
-    <ice-header title="North Atlantic" />
+    <ice-header title="North Atlantic Stream Temperature and Brook Trout Occupancy" />
     <div class="ice-container">
       <div class="ice-left-sidebar">
         <div class="ice-box" style="text-align:right">
@@ -217,7 +217,7 @@
       :show="modals.about"
       @close="modals.about = false"
       size="lg">
-      <span slot="title">About the Interactive Catchment Explorer</span>
+      <span slot="title">About ICE</span>
       <div slot="body">
         <about-modal></about-modal>
       </div>
@@ -238,6 +238,15 @@
       <span slot="title">Datasets</span>
       <div slot="body">
         <dataset-modal></dataset-modal>
+      </div>
+    </ice-modal>
+    <ice-modal
+      :show="modals.download"
+      @close="modals.download = false"
+      size="lg">
+      <span slot="title">Download</span>
+      <div slot="body">
+        <download-modal :catchmentsLayer="catchments.layer" :getCatchmentValues="getCatchmentValues" :selectedFeature="selected.feature"></download-modal>
       </div>
     </ice-modal>
     <ice-modal
@@ -264,6 +273,7 @@ import SelectedCatchmentBox from './components/SelectedCatchmentBox.vue'
 import AboutModal from './components/AboutModal.vue'
 import GuideModal from './components/GuideModal.vue'
 import DatasetModal from './components/DatasetModal.vue'
+import DownloadModal from './components/DownloadModal.vue'
 import ContactModal from './components/ContactModal.vue'
 
 require('webpack-jquery-ui/slider')
@@ -300,6 +310,7 @@ export default {
     AboutModal,
     GuideModal,
     DatasetModal,
+    DownloadModal,
     ContactModal
   },
   data () {
@@ -638,6 +649,9 @@ export default {
     },
     getCatchmentValue (catchment) {
       return this.catchments.map.has(catchment.id) ? this.catchments.map.get(catchment.id)[this.variable.id] : null
+    },
+    getCatchmentValues (catchment) {
+      return this.catchments.map.has(catchment.id) ? this.catchments.map.get(catchment.id) : null
     },
     getCatchmentFill (catchment) {
       if (!this.catchments.map.has(catchment.id)) return 'none'

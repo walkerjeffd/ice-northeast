@@ -2,7 +2,7 @@
   <div>
     <div class="ice-info-box text-right">
       <div class="ice-info-box-title">
-        <strong>Selected {{ theme.label }}:</strong> - {{ selected.properties.name }} ({{ selected.id }})
+        <strong>Selected {{ theme.label }}:</strong> {{ selected.properties.name }} ({{ selected.id }})
       </div>
 
       <div class="ice-info-box-body">
@@ -35,7 +35,7 @@
               <td>{{row.formattedValue}}</td>
             </tr>
           </tbody>
-        </table>        
+        </table>
       </div>
     </ice-modal>
   </div>
