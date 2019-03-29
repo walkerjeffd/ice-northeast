@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="full">
-    <ice-header title="North Atlantic Stream Temperature and Brook Trout Occupancy" />
+    <ice-header title="Stream Temperature and Brook Trout Occupancy in the North Atlantic" />
     <div class="ice-container">
       <div class="ice-left-sidebar">
         <div class="ice-box" style="text-align:right">
@@ -93,7 +93,7 @@
           </div>
           <div class="row">
             <div class="col-xs-12 text-right">
-              <a href="#" @click.prevent="show.legendSettings = !show.legendSettings"><small>Color Settings</small></a>
+              <a href="#" @click.prevent="show.legendSettings = !show.legendSettings"><small>Legend Options</small></a>
             </div>
           </div>
         </div>
