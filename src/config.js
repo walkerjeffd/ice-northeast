@@ -6,7 +6,7 @@ export default {
   },
   production: {
     api: {
-      url: 'https://ecosheds.org.s3.amazonaws.com/ice-sheds/'
+      url: 'https://s3.amazonaws.com/ecosheds.org/ice-sheds/'
     }
   }
 }
