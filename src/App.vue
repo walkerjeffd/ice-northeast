@@ -592,6 +592,7 @@ export default {
           .slice()
         xf.subset.remove()
         xf.subset.add(this.catchments.data)
+        evt.$emit('filter:set')
       }
 
       this.counts.subset.total = this.catchments.data.length

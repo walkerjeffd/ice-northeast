@@ -4,7 +4,7 @@
     <div class="row">
       <div class="col-md-12">
         <img
-          src="../assets/img/about/filter-area.gif"
+          src="../assets/img/guide/filter-area.gif"
           alt="Cross-filtering with percent area aggregation"
           class="img-rounded img-center pull-right">
         <p>
