@@ -61,7 +61,7 @@ cat("done\n")
 cat("fetching temp-model predictions...")
 df_temp <- tbl(con, "temp_model") %>%
   select(featureid, version, variable, value) %>%
-  filter(version == config$`temp-model`$version) %>%
+  filter(version == !!config$`temp-model`$version) %>%
   collect() %>%
   select(-version) %>%
   spread(variable, value) %>%
@@ -73,7 +73,7 @@ cat("done\n")
 cat("fetching bto-model predictions...")
 df_bto <- tbl(con, "bto_model") %>%
   select(featureid, version, variable, value) %>%
-  filter(version == config$`bto-model`$version) %>%
+  filter(version == !!config$`bto-model`$version) %>%
   collect() %>%
   select(-version) %>%
   spread(variable, value) %>%
