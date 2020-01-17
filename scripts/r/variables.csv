@@ -1,17 +1,20 @@
 default,id,label,map,filter,formats_axis,formats_value,scale_domain_min,scale_domain_max,scale_transform,group
-FALSE,area_km2 ,Area (km2),FALSE,FALSE,",.0f",",.1f",,,,
-FALSE,upstream_area_km2 ,Drainage Area (km2),FALSE,TRUE,",.0f",",.1f",0,200,log,Catchment Characteristics
-TRUE,elevation ,Elevation (m),TRUE,TRUE,",.0f",",.0f",0,1000,linear,Catchment Characteristics
-FALSE,agriculture ,Agriculture Cover (%),TRUE,TRUE,0.00%,0.00%,0,1,linear,Catchment Characteristics
-FALSE,forest ,Forest Cover (%),TRUE,TRUE,0.00%,0.00%,0,1,linear,Catchment Characteristics
-FALSE,summer_prcp_mm ,Summer Precip. (mm/mon),TRUE,TRUE,",.0f",",.1f",70,220,linear,Catchment Characteristics
-FALSE,mean_summer_temp ,Mean Summer Temp. (degC),TRUE,TRUE,",.0f",",.1f",10,26,linear,Stream Temperature Model
-FALSE,n_day_temp_gt_18 ,# Days/Year Temp. > 18 degC,TRUE,TRUE,",.0f",",.0f",1,200,log,Stream Temperature Model
-FALSE,n_day_temp_gt_22 ,# Days/Year Temp. > 22 degC,TRUE,TRUE,",.0f",",.0f",1,50,log,Stream Temperature Model
-FALSE,occ_current ,Current Occupancy Prob.,TRUE,TRUE,0.00%,0.00%,0,1,linear,Brook Trout Occupancy Model
-FALSE,occ_temp7p20 ,Occupancy Prob. with July Temp +2 degC,TRUE,TRUE,0.00%,0.00%,0,1,linear,Brook Trout Occupancy Model
-FALSE,occ_temp7p40 ,Occupancy Prob. with July Temp +4 degC,TRUE,TRUE,0.00%,0.00%,0,1,linear,Brook Trout Occupancy Model
-FALSE,occ_temp7p60 ,Occupancy Prob. with July Temp +6 degC,TRUE,TRUE,0.00%,0.00%,0,1,linear,Brook Trout Occupancy Model
-FALSE,max_temp7p_occ30 ,Threshold July Temp for 30% Occupancy Prob.,TRUE,TRUE,",.0f",",.1f",0,6,linear,Brook Trout Occupancy Model
-FALSE,max_temp7p_occ50 ,Threshold July Temp for 50% Occupancy Prob.,TRUE,TRUE,",.0f",",.1f",0,6,linear,Brook Trout Occupancy Model
-FALSE,max_temp7p_occ70 ,Threshold July Temp for 70% Occupancy Prob.,TRUE,TRUE,",.0f",",.1f",0,6,linear,Brook Trout Occupancy Model
+FALSE,area_km2,Area (km2),FALSE,FALSE,",.0f",",.1f",,,,
+FALSE,upstream_area_km2,Drainage Area (km2),FALSE,TRUE,",.0f",",.1f",0,200,log,Catchment Characteristics
+TRUE,elevation,Elevation (m),TRUE,TRUE,",.0f",",.0f",0,1000,linear,Catchment Characteristics
+FALSE,agriculture,Agriculture Cover (%),TRUE,TRUE,0.00%,0.00%,0,1,linear,Catchment Characteristics
+FALSE,forest,Forest Cover (%),TRUE,TRUE,0.00%,0.00%,0,1,linear,Catchment Characteristics
+FALSE,summer_prcp_mm,Summer Precip. (mm/mon),TRUE,TRUE,",.0f",",.1f",70,220,linear,Catchment Characteristics
+FALSE,mean_summer_temp,Mean Summer Temp. (degC),TRUE,TRUE,",.0f",",.1f",10,30,linear,Stream Temperature Model
+FALSE,mean_summer_temp_air2,Mean Summer Temp. (degC) w/ Air +2 degC,TRUE,TRUE,",.0f",",.1f",10,30,linear,Stream Temperature Model
+FALSE,mean_summer_temp_air4,Mean Summer Temp. (degC) w/ Air +4 degC,TRUE,TRUE,",.0f",",.1f",10,30,linear,Stream Temperature Model
+FALSE,mean_summer_temp_air6,Mean Summer Temp. (degC) w/ Air +6 degC,TRUE,TRUE,",.0f",",.1f",10,30,linear,Stream Temperature Model
+FALSE,n_day_temp_gt_18,# Days/Year Temp. > 18 degC,TRUE,TRUE,",.0f",",.0f",1,200,log,Stream Temperature Model
+FALSE,n_day_temp_gt_22,# Days/Year Temp. > 22 degC,TRUE,TRUE,",.0f",",.0f",1,50,log,Stream Temperature Model
+FALSE,occ_current,Current Occupancy Prob.,TRUE,TRUE,0.00%,0.00%,0,1,linear,Brook Trout Occupancy Model
+FALSE,occ_air_2,Occupancy Prob. with Air Temp +2 degC,TRUE,TRUE,0.00%,0.00%,0,1,linear,Brook Trout Occupancy Model
+FALSE,occ_air_4,Occupancy Prob. with Air Temp +4 degC,TRUE,TRUE,0.00%,0.00%,0,1,linear,Brook Trout Occupancy Model
+FALSE,occ_air_6,Occupancy Prob. with Air Temp +6 degC,TRUE,TRUE,0.00%,0.00%,0,1,linear,Brook Trout Occupancy Model
+FALSE,max_air_occ30,Maximum Air Temp Increase for 30% Occupancy Prob.,TRUE,TRUE,",.1f",",.1f",0,6,linear,Brook Trout Occupancy Model
+FALSE,max_air_occ50,Maximum Air Temp Increase for 50% Occupancy Prob.,TRUE,TRUE,",.1f",",.1f",0,6,linear,Brook Trout Occupancy Model
+FALSE,max_air_occ70,Maximum Air Temp Increase for 70% Occupancy Prob.,TRUE,TRUE,",.1f",",.1f",0,6,linear,Brook Trout Occupancy Model

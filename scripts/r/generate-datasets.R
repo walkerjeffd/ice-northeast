@@ -61,23 +61,26 @@ cat("done\n")
 cat("fetching temp-model predictions...")
 df_temp <- tbl(con, "temp_model") %>%
   select(featureid, version, variable, value) %>%
-  filter(version == !!config$`temp-model`$version) %>%
+  filter(
+    version == !!config$`temp-model`$version,
+    variable %in% c("mean_summer_temp", "mean_summer_temp_air2", "mean_summer_temp_air4", "mean_summer_temp_air6", "n_day_temp_gt_18", "n_day_temp_gt_22")
+  ) %>%
   collect() %>%
   select(-version) %>%
-  spread(variable, value) %>%
-  select(featureid, mean_summer_temp, n_day_temp_gt_18, n_day_temp_gt_22)
+  spread(variable, value)
 cat("done\n")
 
 # bto-model ---------------------------------------------------------------
 
 cat("fetching bto-model predictions...")
 df_bto <- tbl(con, "bto_model") %>%
-  select(featureid, version, variable, value) %>%
-  filter(version == !!config$`bto-model`$version) %>%
+  filter(
+    version == !!config$`bto-model`$version,
+    variable %in% c("occ_current", "occ_air_2", "occ_air_4", "occ_air_6", "max_air_occ30", "max_air_occ50", "max_air_occ70")
+  ) %>%
   collect() %>%
   select(-version) %>%
-  spread(variable, value) %>%
-  select(featureid, occ_current, occ_temp7p20, occ_temp7p40, occ_temp7p60, max_temp7p_occ30, max_temp7p_occ50, max_temp7p_occ70)
+  spread(variable, value)
 cat("done\n")
 
 # state -------------------------------------------------------------------
@@ -112,7 +115,8 @@ df <- df_huc %>%
   filter(
     state %in% c("ME", "NH","VT", "MA", "RI", "CT", "NY", "NJ", "PA", "DE", "MD", "DC", "WV", "VA")
   ) %>%
-  rename(id = featureid)
+  rename(id = featureid) %>%
+  mutate_at(vars(-c(id, huc6, huc8, huc10, huc12, state)), signif, digits = 4)
 cat("done\n")
 
 # export ------------------------------------------------------------------
