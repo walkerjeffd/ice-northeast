@@ -63,15 +63,15 @@
           <td>Predicted mean summer (Jun-Aug) stream temperature at catchment outlet</td>
         </tr>
         <tr>
-          <td>Mean Summer Temp. (degC) w/ Air +2 degC</td>
+          <td>Mean Summer Temp. (degC) w/ Air Temp +2 degC</td>
           <td>Predicted mean summer (Jun-Aug) stream temperature at catchment outlet with air temperature increase of +2 degC</td>
         </tr>
         <tr>
-          <td>Mean Summer Temp. (degC) w/ Air +4 degC</td>
+          <td>Mean Summer Temp. (degC) w/ Air Temp +4 degC</td>
           <td>Predicted mean summer (Jun-Aug) stream temperature at catchment outlet with air temperature increase of +4 degC</td>
         </tr>
         <tr>
-          <td>Mean Summer Temp. (degC) w/ Air +6 degC</td>
+          <td>Mean Summer Temp. (degC) w/ Air Temp +6 degC</td>
           <td>Predicted mean summer (Jun-Aug) stream temperature at catchment outlet with air temperature increase of +6 degC</td>
         </tr>
         <tr>
@@ -102,27 +102,27 @@
           <td>Predicted probability of Brook Trout occupancy within catchment under current (historical) conditions</td>
         </tr>
         <tr>
-          <td>Occupancy Prob. with Air Temp +2 degC</td>
+          <td>Occupancy Prob. w/ Air Temp +2 degC</td>
           <td>Predicted probability of Brook Trout occupancy within catchment with 2 degC increase in air temp.</td>
         </tr>
         <tr>
-          <td>Occupancy Prob. with Air Temp +4 degC</td>
+          <td>Occupancy Prob. w/ Air Temp +4 degC</td>
           <td>Predicted probability of Brook Trout occupancy within catchment with 4 degC increase in air temp.</td>
         </tr>
         <tr>
-          <td>Occupancy Prob. with Air Temp +6 degC</td>
+          <td>Occupancy Prob. w/ Air Temp +6 degC</td>
           <td>Predicted probability of Brook Trout occupancy within catchment with 6 degC increase in air temp.</td>
         </tr>
         <tr>
-          <td>Maximum Air Temp Increase for 30% Occupancy Prob.</td>
+          <td>Max Air Temp Increase for 30% Occupancy Prob.</td>
           <td>Maximum increase in air temperature yielding a 30% probability of Brook Trout occupancy.</td>
         </tr>
         <tr>
-          <td>Maximum Air Temp Increase for 50% Occupancy Prob.</td>
+          <td>Max Air Temp Increase for 50% Occupancy Prob.</td>
           <td>Maximum increase in air temperature yielding a 50% probability of Brook Trout occupancy.</td>
         </tr>
         <tr>
-          <td>Maximum Air Temp Increase for 70% Occupancy Prob.</td>
+          <td>Max Air Temp Increase for 70% Occupancy Prob.</td>
           <td>Maximum increase in air temperature yielding a 70% probability of Brook Trout occupancy.</td>
         </tr>
       </tbody>
