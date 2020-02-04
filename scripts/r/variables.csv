@@ -1,6 +1,6 @@
 default,id,label,map,filter,formats_axis,formats_value,scale_domain_min,scale_domain_max,scale_transform,group
-FALSE,area_km2,Area (km2),FALSE,FALSE,",.0f",",.1f",,,,
-FALSE,upstream_area_km2,Drainage Area (km2),FALSE,TRUE,",.0f",",.1f",0,200,log,Catchment Characteristics
+FALSE,area_km2,Local Drainage Area (km2),FALSE,FALSE,",.0f",",.1f",,,,
+FALSE,upstream_area_km2,Upstream Drainage Area (km2),FALSE,TRUE,",.0f",",.1f",0,200,log,Catchment Characteristics
 TRUE,elevation,Elevation (m),TRUE,TRUE,",.0f",",.0f",0,1000,linear,Catchment Characteristics
 FALSE,agriculture,Agriculture Cover (%),TRUE,TRUE,0.00%,0.00%,0,1,linear,Catchment Characteristics
 FALSE,forest,Forest Cover (%),TRUE,TRUE,0.00%,0.00%,0,1,linear,Catchment Characteristics
