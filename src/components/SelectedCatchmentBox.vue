@@ -31,7 +31,7 @@
               <td>{{row.formattedValue}}</td>
             </tr>
           </tbody>
-        </table>        
+        </table>
       </div>
     </ice-modal>
   </div>
@@ -41,7 +41,8 @@
 import { mapGetters } from 'vuex'
 import * as d3 from 'd3'
 
-import { IceModal, xf } from 'ice-components'
+import { xf } from '@/libs/IceCrossfilter'
+import IceModal from '@/components/IceModal'
 
 export default {
   components: { IceModal },
@@ -59,7 +60,7 @@ export default {
     showData () {
       let rows = []
       if (this.showData) {
-        const datum = xf.subset.all().find(d => d.id == this.selected.id)
+        const datum = xf.subset.all().find(d => d.id === this.selected.id)
         rows = this.variables
           .filter(d => d.map || d.filter)
           .map(d => {

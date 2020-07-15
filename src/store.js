@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import { IceStore } from 'ice-components'
+import IceStore from '@/modules/IceStore'
 
 Vue.use(Vuex)
 

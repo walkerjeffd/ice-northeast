@@ -45,7 +45,8 @@
 import { mapGetters } from 'vuex'
 import * as d3 from 'd3'
 
-import { IceModal, xf } from 'ice-components'
+import { xf } from '@/libs/IceCrossfilter'
+import IceModal from '@/components/IceModal'
 
 export default {
   components: { IceModal },

@@ -201,7 +201,7 @@ import { Parser } from 'json2csv'
 
 import { mapGetters } from 'vuex'
 
-import { getGroupByKey, xf, isFiltered } from 'ice-components'
+import { xf, getGroupByKey, isFiltered } from '@/libs/IceCrossfilter'
 
 export default {
   props: ['catchmentsLayer', 'getCatchmentValues', 'selectedFeature'],

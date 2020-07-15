@@ -266,15 +266,24 @@ import axios from 'axios'
 import { mapGetters } from 'vuex'
 import * as d3 from 'd3'
 
-import { IceFilter, IceHeader, IceLegend, IceSelect, IceMap, IceMapLayer, IceModal, EventBus as evt, xf, getGroupByKey, isFiltered } from 'ice-components'
+import { xf, getGroupByKey, isFiltered } from '@/libs/IceCrossfilter'
+import evt from '@/events'
 
-import SelectedHucBox from './components/SelectedHucBox.vue'
-import SelectedCatchmentBox from './components/SelectedCatchmentBox.vue'
-import AboutModal from './components/AboutModal.vue'
-import GuideModal from './components/GuideModal.vue'
-import DatasetModal from './components/DatasetModal.vue'
-import DownloadModal from './components/DownloadModal.vue'
-import ContactModal from './components/ContactModal.vue'
+import IceFilter from '@/components/IceFilter.vue'
+import IceHeader from '@/components/IceHeader.vue'
+import IceLegend from '@/components/IceLegend.vue'
+import IceSelect from '@/components/IceSelect.vue'
+import IceMap from '@/components/IceMap.vue'
+import IceMapLayer from '@/components/IceMapLayer.vue'
+import IceModal from '@/components/IceModal.vue'
+
+import SelectedHucBox from '@/components/SelectedHucBox.vue'
+import SelectedCatchmentBox from '@/components/SelectedCatchmentBox.vue'
+import AboutModal from '@/components/AboutModal.vue'
+import GuideModal from '@/components/GuideModal.vue'
+import DatasetModal from '@/components/DatasetModal.vue'
+import DownloadModal from '@/components/DownloadModal.vue'
+import ContactModal from '@/components/ContactModal.vue'
 
 require('webpack-jquery-ui/slider')
 
