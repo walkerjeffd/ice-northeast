@@ -718,12 +718,6 @@ a {
   padding: 0px;
   margin: 0px;
   font-family: "proxima-nova-alt", Helvetica, Arial, sans-serif;
-  /* width: 100%;
-  height: 100%;
-   */
-  /* display: flex;
-  flex: 1 0 auto;
-  max-width: 100%; */
   height: calc(100vh - 56px - 68px);
   position: relative;
 }

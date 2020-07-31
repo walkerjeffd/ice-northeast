@@ -1,9 +1,8 @@
 <template>
   <div class="ice-header">
-    <span class="ice-header-brand">ICE - {{ title }}</span>
+    <span class="ice-header-brand">ICE | {{ title }}</span>
     <div class="ice-header-links">
-      <a href="http://ice.ecosheds.org">ICE Home</a> |
-      <a href="http://ecosheds.org">SHEDS Home</a>
+      <a href="https://ecosheds.org">SHEDS Home</a>
     </div>
   </div>
 </template>
