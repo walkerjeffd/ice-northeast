@@ -40,6 +40,7 @@ export default {
 <style>
 .modal {
   z-index: 4000;
+  margin-top: 108px;
 }
 
 .modal-body {
@@ -51,7 +52,4 @@ export default {
   margin-top: 20px;
 }
 
-.modal-dialog {
-  margin-top: 60px;
-}
 </style>

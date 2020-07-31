@@ -133,7 +133,8 @@ export default {
 <style>
 .ice-map {
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  /* height: 100vh; */
 }
 
 div.leaflet-top.leaflet-left {
