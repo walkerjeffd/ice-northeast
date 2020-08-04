@@ -34,20 +34,22 @@ export default {
   },
   mounted () {
     this.map = L.map(this.$el, {
-      ...this.options
+      ...this.options,
+      zoomControl: false
     })
     this.zoomLevel = this.map.getZoom()
 
-    L.control.scale({ position: 'bottomleft' }).addTo(this.map)
+    L.control.scale({ position: 'bottomright' }).addTo(this.map)
+    L.control.zoom({ position: 'topright' }).addTo(this.map)
 
     const basemaps = {
       'ESRI World Imagery': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-      }).addTo(this.map),
+      }),
       'Open Street Map': L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       }),
-      'No Basemap': L.tileLayer('')
+      'No Basemap': L.tileLayer('').addTo(this.map)
     }
 
     const overlays = {}
@@ -68,10 +70,10 @@ export default {
       if (d.visible) layer.addTo(this.map)
     })
 
-    L.control.transparency({ position: 'topleft' }).addTo(this.map)
+    L.control.transparency({ position: 'topright' }).addTo(this.map)
 
     L.control.layers(basemaps, overlays, {
-      position: 'topleft',
+      position: 'topright',
       collapsed: true
     }).addTo(this.map)
 
@@ -138,8 +140,8 @@ export default {
 }
 
 div.leaflet-top.leaflet-left {
-  margin-left: 450px;
-  margin-top: 60px;
+  /* margin-left: 450px; */
+  /* margin-top: 0; */
 }
 
 .leaflet-touch .leaflet-control-layers-toggle {
@@ -160,5 +162,11 @@ div.leaflet-top.leaflet-left {
 .ice-control-transparency-slider {
   height: 100px;
   display: inline-block;
+}
+
+.leaflet-bar a, .leaflet-bar a:hover {
+  width: 34px;
+  height: 34px;
+  padding-top: 4px;
 }
 </style>

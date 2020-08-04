@@ -7,7 +7,7 @@
     <div
       class="modal-dialog"
       role="document"
-      :class="{'modal-lg': size === 'lg', 'modal-sm': size === 'sm'}">
+      :class="'sm'">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" aria-label="Close" @click="close">
@@ -41,15 +41,23 @@ export default {
 .modal {
   z-index: 4000;
   margin-top: 108px;
+  margin-left: 150px;
+  /* width: 500px; */
+  /* margin-left: auto; */
+  /* margin-right: auto; */
 }
 
 .modal-body {
-  max-height: 480px;
+  max-height: 780px;
   overflow-y: auto;
+  /* width: 500px; */
 }
 
 .modal-body h4 {
   margin-top: 20px;
 }
 
+.modal-dialog {
+  width: 500px !important;
+}
 </style>

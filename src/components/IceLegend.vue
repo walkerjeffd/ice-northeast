@@ -16,7 +16,7 @@ export default {
     return {
       svg: null,
       margins: {
-        left: 20,
+        left: 4,
         right: 20
       },
       axisHeight: 30
@@ -135,5 +135,10 @@ export default {
 
 g.legend-axis path {
   fill: none;
+}
+
+g.tick text {
+  font-size: 1.2em;
+  fill: #666666;
 }
 </style>

@@ -16,7 +16,7 @@
         </span>
         <span v-else>None</span>
       </div>
-      <div style="display:inline;float:right;text-align:right">
+      <div style="display:none;float:right;text-align:right">
         Mean:
         {{ meanText.all }} (<svg style="vertical-align:middle" width="12" height="12"><line x1="6" y1="0" x2="6" y2="12" class="mean-all"></line></svg>)<br>
         <span v-if="hasSubset">
@@ -75,10 +75,20 @@ export default {
     }
   },
   computed: {
+    domain () {
+      console.log(this.variable.id)
+      if (this.variable.id === 'mean_summer_temp') {
+        return [12, 21]
+      }
+      if (this.variable.id === 'elevation') {
+        return [0, 1500]
+      }
+      return this.variable.scale.domain
+    },
     xScale () {
       // .log(`filter(${this.variable.id}):computed xScale`)
       return d3.scaleLinear()
-        .domain(this.variable.scale.domain)
+        .domain(this.domain)
         .rangeRound([0, +this.width])
     },
     axis () {
@@ -87,7 +97,7 @@ export default {
     }
   },
   created () {
-    const interval = (this.variable.scale.domain[1] - this.variable.scale.domain[0]) / 40
+    const interval = (this.domain[1] - this.domain[0]) / 40
 
     this.yScale = d3.scaleLinear().range([100, 0])
 
@@ -95,10 +105,10 @@ export default {
     const groupFunction = (d) => {
       if (d === -Infinity) {
         return -Infinity
-      } else if (d >= this.variable.scale.domain[1]) {
-        return this.variable.scale.domain[1] - interval
-      } else if (d < this.variable.scale.domain[0]) {
-        return this.variable.scale.domain[0]
+      } else if (d >= this.domain[1]) {
+        return this.domain[1] - interval
+      } else if (d < this.domain[0]) {
+        return this.domain[0]
       }
       return Math.floor(d / interval) * interval
     }
@@ -197,22 +207,22 @@ export default {
       .attr('transform', `translate(0,${this.height})`)
       .call(this.axis)
 
-    if (this.extent[0] < this.xScale.domain()[0]) {
-      const tick = this.svg.select('g.tick text')
-      if (tick.datum() === this.xScale.domain()[0]) {
-        tick.text(`< ${tick.text()}`)
-      }
-    }
-    if (this.extent[1] > this.xScale.domain()[1]) {
-      const ticks = this.svg.selectAll('g.tick text')
-        .filter(function () { // eslint-disable-line func-names
-          return d3.select(this).text() !== ''
-        })
-      const tick = d3.select(ticks.nodes()[ticks.size() - 1])
-      if (tick.datum() === this.xScale.domain()[1]) {
-        tick.text(`> ${tick.text()}`)
-      }
-    }
+    // if (this.extent[0] < this.xScale.domain()[0]) {
+    //   const tick = this.svg.select('g.tick text')
+    //   if (tick.datum() === this.xScale.domain()[0]) {
+    //     tick.text(`< ${tick.text()}`)
+    //   }
+    // }
+    // if (this.extent[1] > this.xScale.domain()[1]) {
+    //   const ticks = this.svg.selectAll('g.tick text')
+    //     .filter(function () { // eslint-disable-line func-names
+    //       return d3.select(this).text() !== ''
+    //     })
+    //   const tick = d3.select(ticks.nodes()[ticks.size() - 1])
+    //   if (tick.datum() === this.xScale.domain()[1]) {
+    //     tick.text(`${tick.text()}+`)
+    //   }
+    // }
 
     this.brush = d3.brushX()
       .extent([[0, 0], [this.width, this.height]])
@@ -239,15 +249,15 @@ export default {
         } else {
           const extent = s.map(this.xScale.invert)
 
-          if (extent[0] === this.xScale.domain()[0]) {
-            extent[0] = this.extent[0]
-          }
+          // if (extent[0] === this.xScale.domain()[0]) {
+          //   extent[0] = this.extent[0]
+          // }
 
-          if (extent[1] === this.xScale.domain()[1]) {
-            extent[1] = this.extent[1]
-          } else {
-            extent[1] = extent[1] * 1.0000001
-          }
+          // if (extent[1] === this.xScale.domain()[1]) {
+          //   extent[1] = this.extent[1]
+          // } else {
+          //   extent[1] = extent[1] * 1.0000001
+          // }
 
           this.range = extent
         }
@@ -406,16 +416,17 @@ export default {
   width: 455px;
   margin-top: 10px;
   margin-bottom: 0;
+  margin-left:4px ;
 }
 
 .ice-filter .title {
   font-weight: bold;
-  font-size: 0.9em;
+  font-size: 1.1em;
   min-height: 23px;
 }
 
 .ice-filter .stats {
-  font-size: 0.9em;
+  font-size: 1em;
 }
 
 .chart {
@@ -438,18 +449,23 @@ export default {
   fill: #999;
 }
 
+.background.bar.all {
+  visibility: hidden;
+}
+
 .background.bar.subset {
   fill: #AAA;
-  opacity: 0.6;
+  opacity: 1;
 }
 
 .foreground.bar.all {
   fill: steelblue;
+  visibility: hidden;
 }
 
 .foreground.bar.subset {
-  fill: orangered;
-  opacity: 0.6;
+  fill: steelblue;
+  opacity: 1;
 }
 
 .axis path, .axis line {
@@ -473,11 +489,13 @@ export default {
 }
 
 line.mean-all {
+  visibility: hidden;
   stroke: rgb(76, 174, 255);
   stroke-width: 2px;
 }
 
 line.mean-subset {
+  visibility: hidden;
   stroke: rgb(255, 116, 64);
   stroke-width: 2px;
 }

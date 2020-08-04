@@ -2,7 +2,7 @@
   <div>
     <div class="ice-info-box text-right">
       <div class="ice-info-box-title">
-        <strong>Selected Catchment:</strong> {{ selected.id }}
+        <strong>Selected Catchment: {{ selected.id }}</strong>
       </div>
 
       <div class="ice-info-box-body">
@@ -18,12 +18,12 @@
       </div>
     </div>
     <ice-modal :show="showData" @close="showData = false">
-      <span slot="title">Selected Catchment ({{ selected.id }})</span>
+      <span slot="title">Catchment {{ selected.id }}</span>
       <div slot="body">
-        <table class="table table-condensed table-striped" v-if="dataRows.length > 0">
-          <thead>
-            <th>Variable</th>
-            <th>Value</th>
+        <table class="table table-condensed table-striped" v-if="dataRows.length > 0" style="margin-bottom:0px">
+          <thead style="font-size:1.1em">
+            <th style="padding-left:4px">Variable</th>
+            <th style="padding-left:4px">Value</th>
           </thead>
           <tbody>
             <tr v-for="row in dataRows" :key="row.id">
@@ -93,8 +93,8 @@ export default {
 <style scoped>
 .ice-info-box {
   position: absolute;
-  right: 490px;
-  top: 135px;
+  right: 70px;
+  top: 10px;
   padding: 5px 5px;
   background: #fff;
   font-size: 12px;

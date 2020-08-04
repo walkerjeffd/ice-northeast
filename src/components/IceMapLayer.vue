@@ -10,7 +10,7 @@ import evt from '@/events'
 
 export default {
   name: 'IceMapLayer',
-  props: ['id', 'setBounds', 'layer', 'getFill', 'getValue', 'getLabel', 'selected'],
+  props: ['id', 'setBounds', 'layer', 'getFill', 'getValue', 'getLabel', 'selected', 'stroke'],
   mixins: [VariableMixin],
   data () {
     return {
@@ -136,6 +136,7 @@ export default {
         .append('path')
         .style('cursor', 'pointer')
         .style('pointer-events', 'visible')
+        .style('stroke', this.stroke || 'rgb(0, 0, 0)')
         .on('click', function (d) {
           !vm.$parent.disableClick && vm.$emit('click', d)
           this.parentNode.appendChild(this) // move to front
@@ -158,8 +159,8 @@ export default {
         })
         .on('mouseout', function (d) {
           d3.select(this)
-            .style('stroke', vm.isSelected(d) ? 'red' : null)
-            .style('stroke-width', null)
+            .style('stroke', vm.isSelected(d) ? 'red' : (this.stroke || 'rgb(0, 0, 0)'))
+            .style('stroke-width', vm.isSelected(d) ? 2 : null)
           tip.hide(d, this)
         })
         .merge(paths)
@@ -178,7 +179,8 @@ export default {
       console.log(`map-layer(${this.id}):renderSelected`)
       this.g
         .selectAll('path')
-        .style('stroke', d => this.isSelected(d) ? 'red' : null)
+        .style('stroke', d => this.isSelected(d) ? 'red' : this.stroke || 'rgb(0, 0, 0)')
+        .style('stroke-width', d => this.isSelected(d) ? 2 : null)
     },
     isSelected (feature) {
       return !!this.selected && this.selected.id === feature.id
@@ -193,9 +195,10 @@ export default {
 <style>
 path {
   fill: rgb(200,200,200);
-  stroke: rgb(0, 0, 0);
+  /* stroke: rgb(0, 0, 0); */
   stroke-width: 0.5px;
 }
+
 /*
   d3-tip -----------------------------------------------------------
   https://rawgit.com/Caged/d3-tip/master/examples/example-styles.css

@@ -1,74 +1,14 @@
 <template>
   <div id="app" class="full">
-    <UsgsHeader></UsgsHeader>
 
     <div class="ice-container">
-      <ice-header title="Stream Temperature and Brook Trout Occupancy in the North Atlantic" />
       <div class="ice-left-sidebar">
-        <div class="ice-box" style="text-align:right">
-          <div class="btn-group btn-group-justified btn-group-xs">
-            <a class="btn btn-default" @click="modals.about = true">
-              <i class="fa fa-info-circle"/> About
-            </a>
-            <a class="btn btn-default" @click="modals.guide = true">
-              <i class="fa fa-book"/> User Guide
-            </a>
-            <a class="btn btn-default" @click="modals.dataset = true">
-              <i class="fa fa-table"/> Datasets
-            </a>
-            <a class="btn btn-default" @click="modals.download = true">
-              <i class="fa fa-download"/> Download
-            </a>
-            <a class="btn btn-default" @click="modals.contact = true">
-              <i class="fa fa-envelope"/> Contact
-            </a>
-          </div>
-        </div>
         <div class="ice-box">
-          <div class="row">
-            <div class="col-xs-3">
-              <div class="ice-box-label">Resolution</div>
-            </div>
-            <div class="col-xs-9">
-              <ice-select
-                id="theme"
-                :options="themes"
-                :value="selected.theme"
-                :multiple="false"
-                @input="selectTheme"
-                value-field="id"
-                text-field="label"
-                title="Select dataset..."
-              />
-            </div>
-          </div>
-        </div>
-        <div class="ice-box">
-          <div class="row">
-            <div class="col-xs-3">
-              <div class="ice-box-label">States</div>
-            </div>
-            <div class="col-xs-9">
-              <ice-select
-                id="region"
-                :config="regionFilter.config"
-                :options="regionFilter.options"
-                :value="regionFilter.selected"
-                :multiple="true"
-                @input="selectRegions"
-                value-field="id"
-                text-field="label"
-                title="Select states..."
-              />
-            </div>
-          </div>
-        </div>
-        <div class="ice-box">
-          <div class="row">
-            <div class="col-xs-3">
-              <div class="ice-box-label">Variable</div>
-            </div>
-            <div class="col-xs-9">
+          <!-- <div class="row"> -->
+            <!-- <div class="col-xs-3"> -->
+              <div class="ice-box-title">Color Variable</div>
+            <!-- </div> -->
+            <!-- <div class="col-xs-9"> -->
               <ice-select
                 id="variable"
                 :options="variableOptions"
@@ -80,8 +20,8 @@
                 text-field="label"
                 title="Select variable..."
               />
-            </div>
-          </div>
+            <!-- </div> -->
+          <!-- </div> -->
           <div class="row">
             <div class="col-xs-12">
               <ice-legend
@@ -93,52 +33,14 @@
                 :height="20" />
             </div>
           </div>
-          <div class="row">
+          <!-- <div class="row">
             <div class="col-xs-12 text-right">
               <a href="#" @click.prevent="show.legendSettings = !show.legendSettings"><small>Legend Options</small></a>
             </div>
-          </div>
+          </div> -->
         </div>
-        <div class="ice-box" v-if="show.legendSettings">
-          <div class="row">
-            <div class="col-xs-3">
-              <div class="ice-box-label">Colors</div>
-            </div>
-            <div class="col-xs-9">
-              <ice-select
-                id="color"
-                :options="color.options"
-                :value="color.selected"
-                :multiple="false"
-                @input="selectColor"
-                value-field="id"
-                text-field="label"
-                title="Select color scheme..."
-              />
-            </div>
-          </div>
-          <div class="row" style="margin-top:10px">
-            <div class="col-xs-3">
-              <div class="ice-box-label">Transform</div>
-            </div>
-            <div class="col-xs-9">
-              <ice-select
-                id="transform"
-                :options="transform.options"
-                :value="transform.selected"
-                :multiple="false"
-                @input="selectTransform"
-                value-field="id"
-                text-field="label"
-                title="Select transformation..."
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="ice-right-sidebar">
         <div class="ice-box">
-          <div class="ice-box-title">Histograms and Filters</div>
+          <div class="ice-box-title">Crossfilters</div>
           <ice-select
             id="filters"
             :options="filterOptions"
@@ -151,15 +53,16 @@
             title="Select variable(s)..."
           />
           <div class="ice-filter-legend">
-            <div>
+            <!-- <div>
               <i class="fa fa-square" style="color:steelblue"></i>
               All Catchments
               <span class="pull-right" v-show="theme" style="display:none">{{ counts.all.filtered.toLocaleString() }} of {{ counts.all.total.toLocaleString() }} filtered</span>
-            </div>
+            </div> -->
             <div v-if="counts.subset.total > 0">
-              <i class="fa fa-square" style="color:orangered"></i>
+              <!-- <i class="fa fa-square" style="color:orangered"></i>
               Catchments In Selected HUC
-              <span class="pull-right" v-show="theme" style="display:none">{{ counts.subset.filtered.toLocaleString() }} of {{ counts.subset.total.toLocaleString() }} filtered</span>
+              <span class="pull-right" v-show="theme" style="display:none">{{ counts.subset.filtered.toLocaleString() }} of {{ counts.subset.total.toLocaleString() }} filtered</span> -->
+              # Catchments Filtered: {{ counts.subset.filtered.toLocaleString() }} of {{ counts.subset.total.toLocaleString() }} ({{ pctFiltered }}%)
             </div>
           </div>
           <div
@@ -181,7 +84,7 @@
         @zoomTo="zoomToFeature"
         @unselect="selectFeature"
         @showCatchments="showCatchments"
-        v-if="selected.feature" />
+        v-if="selected.feature && !catchments.layer" />
       <selected-catchment-box
         :selected="catchments.selected"
         @zoomTo="zoomToFeature"
@@ -190,79 +93,27 @@
       <ice-map :options="map.options" :overlays="map.overlays">
         <ice-map-layer
           id="huc"
+          v-if="!catchments.layer"
           :layer="layer"
           :set-bounds="true"
           :get-fill="getFill"
           :get-value="getValue"
           :get-label="getFeatureLabel"
           :selected="selected.feature"
+          :stroke="'none'"
           @click="selectFeature" />
         <ice-map-layer
           id="catchment"
           v-if="catchments.layer"
           :layer="catchments.layer"
-          :set-bounds="false"
+          :set-bounds="true"
           :get-fill="getCatchmentFill"
           :get-value="getCatchmentValue"
           :get-label="getCatchmentLabel"
           :selected="catchments.selected"
           @click="selectCatchment" />
       </ice-map>
-      <div
-        class="ice-loading"
-        v-show="loading">
-        <h1>Loading</h1>
-        <div><i class="fa fa-spinner fa-spin fa-5x fa-fw" /></div>
-      </div>
     </div>
-
-    <ice-modal
-      :show="modals.about"
-      @close="modals.about = false"
-      size="lg">
-      <span slot="title">About ICE</span>
-      <div slot="body">
-        <about-modal></about-modal>
-      </div>
-    </ice-modal>
-    <ice-modal
-      :show="modals.guide"
-      @close="modals.guide = false"
-      size="lg">
-      <span slot="title">User Guide</span>
-      <div slot="body">
-        <guide-modal></guide-modal>
-      </div>
-    </ice-modal>
-    <ice-modal
-      :show="modals.dataset"
-      @close="modals.dataset = false"
-      size="lg">
-      <span slot="title">Datasets</span>
-      <div slot="body">
-        <dataset-modal></dataset-modal>
-      </div>
-    </ice-modal>
-    <ice-modal
-      :show="modals.download"
-      @close="modals.download = false"
-      size="lg">
-      <span slot="title">Download</span>
-      <div slot="body">
-        <download-modal :catchmentsLayer="catchments.layer" :getCatchmentValues="getCatchmentValues" :selectedFeature="selected.feature"></download-modal>
-      </div>
-    </ice-modal>
-    <ice-modal
-      :show="modals.contact"
-      @close="modals.contact = false"
-      size="lg">
-      <span slot="title">Contact Us</span>
-      <div slot="body">
-        <contact-modal></contact-modal>
-      </div>
-    </ice-modal>
-
-    <UsgsFooter></UsgsFooter>
   </div>
 </template>
 
@@ -274,24 +125,14 @@ import * as d3 from 'd3'
 import { xf, getGroupByKey, isFiltered } from '@/libs/IceCrossfilter'
 import evt from '@/events'
 
-import UsgsHeader from '@/components/usgs/UsgsHeader.vue'
-import UsgsFooter from '@/components/usgs/UsgsFooter.vue'
-
 import IceFilter from '@/components/IceFilter.vue'
-import IceHeader from '@/components/IceHeader.vue'
 import IceLegend from '@/components/IceLegend.vue'
 import IceSelect from '@/components/IceSelect.vue'
 import IceMap from '@/components/IceMap.vue'
 import IceMapLayer from '@/components/IceMapLayer.vue'
-import IceModal from '@/components/IceModal.vue'
 
 import SelectedHucBox from '@/components/SelectedHucBox.vue'
 import SelectedCatchmentBox from '@/components/SelectedCatchmentBox.vue'
-import AboutModal from '@/components/AboutModal.vue'
-import GuideModal from '@/components/GuideModal.vue'
-import DatasetModal from '@/components/DatasetModal.vue'
-import DownloadModal from '@/components/DownloadModal.vue'
-import ContactModal from '@/components/ContactModal.vue'
 
 require('webpack-jquery-ui/slider')
 
@@ -314,24 +155,14 @@ const filterPercentVariable = {
 export default {
   name: 'app',
   components: {
-    UsgsHeader,
-    UsgsFooter,
-
     IceFilter,
-    IceHeader,
     IceLegend,
     IceMap,
     IceMapLayer,
-    IceModal,
     IceSelect,
 
     SelectedHucBox,
-    SelectedCatchmentBox,
-    AboutModal,
-    GuideModal,
-    DatasetModal,
-    DownloadModal,
-    ContactModal
+    SelectedCatchmentBox
   },
   data () {
     return {
@@ -351,30 +182,30 @@ export default {
           minZoom: 5
         },
         overlays: [
-          {
-            url: 'http://ecosheds.org:8080/geoserver/wms',
-            label: 'Major Streams',
-            layer: 'sheds:flowlines_strahler_3',
-            visible: true
-          }, {
-            url: 'http://ecosheds.org:8080/geoserver/wms',
-            label: 'Minor Streams',
-            layer: 'sheds:detailed_flowlines',
-            minZoom: 10
-          }, {
-            url: 'http://ecosheds.org:8080/geoserver/wms',
-            label: 'NHD Waterbodies',
-            layer: 'sheds:waterbodies'
-          }, {
-            url: 'http://ecosheds.org:8080/geoserver/wms',
-            label: 'HUC8 Boundaries',
-            layer: 'sheds:wbdhu8'
-          }, {
-            url: 'http://ecosheds.org:8080/geoserver/wms',
-            label: 'HUC12 Boundaries',
-            layer: 'sheds:wbdhu12',
-            minZoom: 10
-          }
+          // {
+          //   url: 'http://ecosheds.org:8080/geoserver/wms',
+          //   label: 'Major Streams',
+          //   layer: 'sheds:flowlines_strahler_3',
+          //   visible: true
+          // }, {
+          //   url: 'http://ecosheds.org:8080/geoserver/wms',
+          //   label: 'Minor Streams',
+          //   layer: 'sheds:detailed_flowlines',
+          //   minZoom: 10
+          // }, {
+          //   url: 'http://ecosheds.org:8080/geoserver/wms',
+          //   label: 'NHD Waterbodies',
+          //   layer: 'sheds:waterbodies'
+          // }, {
+          //   url: 'http://ecosheds.org:8080/geoserver/wms',
+          //   label: 'HUC8 Boundaries',
+          //   layer: 'sheds:wbdhu8'
+          // }, {
+          //   url: 'http://ecosheds.org:8080/geoserver/wms',
+          //   label: 'HUC12 Boundaries',
+          //   layer: 'sheds:wbdhu12',
+          //   minZoom: 10
+          // }
         ]
       },
       show: {
@@ -458,10 +289,16 @@ export default {
       return this.selected.filters
         .map(id => this.variables.find(d => d.id === id))
     },
+    pctFiltered () {
+      return (this.counts.subset.filtered / this.counts.subset.total * 100) < 10 ? (this.counts.subset.filtered / this.counts.subset.total * 100).toFixed(1) : (this.counts.subset.filtered / this.counts.subset.total * 100).toFixed(0)
+    },
     variableScale () {
       if (!this.variable) return d3.scaleLinear()
 
-      const domain = this.variable.scale.domain.slice(0)
+      let domain = this.variable.scale.domain.slice(0)
+      if (this.variable.id === 'mean_summer_temp') {
+        domain = [12, 21]
+      }
 
       let scale
       switch (this.transform.selected) {
@@ -718,15 +555,15 @@ a {
   padding: 0px;
   margin: 0px;
   font-family: "proxima-nova-alt", Helvetica, Arial, sans-serif;
-  height: calc(100vh - 56px - 68px);
+  height: 100vh;
   position: relative;
 }
 
 .ice-left-sidebar {
   display: inline;
   position: absolute;
-  top: 60px;
-  left: 0px;
+  top: 0;
+  left: 10px;
   width: 440px;
   z-index: 3000;
 }
@@ -743,6 +580,7 @@ a {
 .ice-box {
   padding: 10px;
   width: 100%;
+  margin: 10px 0px;
   background-color: rgba(255, 255, 255, 0.8);
   border-bottom-right-radius: 2px;
   box-shadow: 0px 0px 3px 0px #aaa;
@@ -750,9 +588,10 @@ a {
 
 .ice-box-title {
   font-weight: bold;
-  font-size: 1.1em;
+  font-size: 1.6em;
   font-variant: small-caps;
   margin-bottom: 5px;
+  padding-left: 4px;
 }
 
 .ice-box-label {
@@ -788,5 +627,13 @@ a {
   background: rgba(0, 0, 0, 0.7);
   text-align: center;
   color: #f5f5f5;
+}
+
+.filter-option-inner-inner {
+  font-size: 0.98em !important;
+}
+
+.dropdown.bootstrap-select.bs3 {
+  padding-left: 4px !important;
 }
 </style>
