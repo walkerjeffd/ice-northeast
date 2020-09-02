@@ -1,4 +1,4 @@
-# ice-sheds
+# ice-northeast
 
 ## Project setup
 ```

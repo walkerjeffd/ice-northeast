@@ -84,7 +84,7 @@ cat("done\n")
 
 # export ------------------------------------------------------------------
 
-filename <- "../../data/ice-sheds.json"
+filename <- "../../data/themes.json"
 cat(glue::glue("saving {filename}..."))
 list(themes = themes)%>%
   write_json(path = filename, auto_unbox = TRUE, pretty = TRUE, na = "null")

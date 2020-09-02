@@ -1,15 +1,14 @@
 {
-  "name": "ice-sheds",
-  "version": "0.1.0",
+  "name": "ice-northeast",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "npm-run-all --parallel data serve",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-serv+ice build",
+    "build": "vue-cli-service build",
+    "build:staging": "vue-cli-service build --mode staging",
     "lint": "vue-cli-service lint",
-    "data": "http-server ./ -p 8000 --cors",
-    "deploy": "npm run build && rsync -av dist/* jeff@ecosheds.org:/conte/www/static/ice/sheds --delete",
-    "deploy:data": "rsync -av data/* jeff@ecosheds.org:/conte/www/static/data/ice-sheds --delete"
+    "data": "http-server ./ -p 8000 --cors"
   },
   "dependencies": {
     "axios": "^0.18.0",
