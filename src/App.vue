@@ -3,7 +3,7 @@
     <UsgsHeader></UsgsHeader>
 
     <div class="ice-container">
-      <ice-header title="Stream Temperature and Brook Trout Occupancy in the North Atlantic" />
+      <ice-header title="Stream Temperature and Brook Trout Occupancy in the Northeast U.S." />
       <div class="ice-left-sidebar">
         <div class="ice-box" style="text-align:right">
           <div class="btn-group btn-group-justified btn-group-xs">

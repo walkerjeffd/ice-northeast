@@ -37,7 +37,7 @@
         <p>
           The <code>Resolution</code> option determines the set of HUC* basins that are used to spatially aggregate the individual catchments (see Spatial Aggregation below).
           Higher values correspond to the higher resolutions (HUC6 is the lowest resolution, HUC12 is the highest).
-          Due to the large number of HUC12 basins across the North Atlantic, this resolution is divided into 2-digit HUC sub-regions, only one of which can be viewed at a time (see <a href="https://commons.wikimedia.org/wiki/File:Huc_region-edit.png" target="_blank">HUC2 map</a>).
+          Due to the large number of HUC12 basins across the Northeast, this resolution is divided into 2-digit HUC sub-regions, only one of which can be viewed at a time (see <a href="https://commons.wikimedia.org/wiki/File:Huc_region-edit.png" target="_blank">HUC2 map</a>).
         </p>
         <p>
           The <code>States</code> option allows you to focus on one or more states by filtering the dataset for only catchments within those states.
@@ -145,13 +145,13 @@
           class="img-rounded pull-right">
         <p>
           One of the primary goals of ICE is to allow users to explore large geospatial datasets.
-          With nearly 400,000 catchments across the North Atlantic region, it would not be possible to provide an interactive layer with all of the catchments due to the memory and processing power required.
+          With nearly 400,000 catchments across the Northeast region, it would not be possible to provide an interactive layer with all of the catchments due to the memory and processing power required.
           To solve this problem, ICE spatially aggregates the individual catchments to larger HUC basins.
           This aggregation yields a smaller dataset (i.e., fewer polygons) that can be more efficiently displayed as an interactive layer on the map.
         </p>
         <p>
           The spatial aggregation can be performed at varying HUC resolutions by changing the <code>Resolution</code> (see Dataset Options section above).
-          By changing this resolution, users can compare patterns at varying spatial scales ranging from the local sub-basins (HUC12s) within a sub-region to the major drainage basins (HUC6s) across the entire North Atlantic region.
+          By changing this resolution, users can compare patterns at varying spatial scales ranging from the local sub-basins (HUC12s) within a sub-region to the major drainage basins (HUC6s) across the entire Northeast region.
         </p>
         <p>
           There are two ways the catchments can be spatially aggregated to the HUC basins depending on which option is selected from the <code>Variable</code> dropdown menu:

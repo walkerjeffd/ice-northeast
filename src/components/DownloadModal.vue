@@ -102,7 +102,7 @@
     <hr>
     <h3>Catchments Layer Dataset (Entire Region)</h3>
     <p>
-      The dataset for all catchments across the entire North Atlantic region can be downloaded as a comma-separate value (CSV) format and as a series of shapefiles.
+      The dataset for all catchments across the entire Northeast region can be downloaded as a comma-separate value (CSV) format and as a series of shapefiles.
     </p>
 
     <p>
