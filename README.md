@@ -1,34 +1,72 @@
-# ice-northeast
+# Interactive Catchment Explorer for Stream Temperature and Brook Trout Occupancy in the Northeast U.S.
+
+Jeffrey D Walker, PhD <jeff@walkerenvres.com>  
+[Walker Environmental Research, LLC](https://walkerenvres.com)
+
 
 ## Project setup
-```
-npm install
+
+Install dependencies
+
+```sh
+yarn install
 ```
 
-## Run development data server
+Configuration is set using `.env` files for each environment (`development`, `staging`, `production`). See [vue-cli](https://cli.vuejs.org/guide/mode-and-env.html) for details.
+
+There are two required configuration variables:
+
 ```
-npm run data
+BASE_URL=/ # root path for the application
+VUE_APP_API_URL=http://localhost:8000/  # location for fetching data, set to baseURL for axios
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+The default `.env` files can be overriden with `.local` variants (e.g. `.env.development.local`).
+
+## Generate Datasets
+
+The R and bash scripts located in the `scripts` folder are used to generate the datasets for this application, which get saved to the `data/` folder.
+
+See `scripts/README.md` for instructions.
+
+## Development Server
+
+To run the application in development mode, run the `dev` command, which serves the `data/` folder at port `8000`, and runs the vue CLI `serve` command.
+
+```sh
+yarn dev
 ```
 
-### Compiles and minifies for production
-```
-npm run build
+## Production Build
+
+Run the `build` command to build the application for production. The output is saved to the `dist/` folder.
+
+```sh
+yarn build
 ```
 
-### Run your tests
-```
-npm run test
+For staging build, run `build:staging`
+
+```sh
+yarn build:staging
 ```
 
-### Lints and fixes files
-```
-npm run lint
+## Deployment
+
+After building the application, copy the contents of `dist/` and `data/` to the production server.
+
+```sh
+rsync -av --delete dist/ user@host:/path/to/app
+rsync -av --delete data/ user@host:/path/to/data
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+If the application is deployed to S3, use the AWS CLI.
+
+```sh
+aws s3 sync dist/ s3://<WEBSITE_BUCKET_NAME>/<BASE_URL> --delete
+aws s3 sync data/ s3://<DATA_BUCKET_NAME>/ --delete
+```
+
+## License
+
+MIT (see `LICENSE`)
