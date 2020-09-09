@@ -210,4 +210,9 @@ path {
   font-family: sans-serif;
   z-index: 1000;
 }
+
+.leaflet-tile.leaflet-tile-loaded {
+  width: 257px !important;
+  height: 257px !important;
+}
 </style>
