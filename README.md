@@ -7,7 +7,7 @@ Jeffrey D Walker, PhD <jeff@walkerenvres.com>
 
 This repository contains the source code for the Interactive Catchment Explorer (ICE) application of Stream Temperature and Brook Trout Occupancy in the Northeast U.S.
 
-**LIVE URL:** [https://usgs.gov/apps/ecosheds/ice-northeast]()
+**LIVE URL:** https://usgs.gov/apps/ecosheds/ice-northeast
 
 If you are interested in adapting ICE to other datasets, please see the ICE starter template [walkerjeffd/ice-template](https://github.com/walkerjeffd/ice-template), which contains the latest design and implementation of ICE and includes more detailed developer instructions.
 
