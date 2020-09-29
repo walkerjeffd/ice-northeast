@@ -9,6 +9,17 @@ This repository contains the source code for the Interactive Catchment Explorer 
 
 If you are interested in using ICE to explore other datasets, please see the ICE starter template [walkerjeffd/ice-template](https://github.com/walkerjeffd/ice-template), which contains the latest design and implementation of ICE and includes more detailed developer instructions.
 
+## Datasets
+
+The R and bash scripts located in the `scripts` folder are used to generate the datasets for this application, which get saved to the `data/` folder. See `scripts/README.md` for instructions. Note this requires access to the SHEDS database.
+
+Due to their large size, the generated datasets are **not** stored in this repo. To get the latest version of the datasets, download the following tarball and extract it to the `data/` folder.
+
+```
+wget https://ecosheds.org/data/ice-northeast/ice-northeast-data.tar.gz
+tar -xzvf ice-northeast-data.tar.gz -C ./data
+```
+
 ## Project setup
 
 Install dependencies
@@ -27,12 +38,6 @@ VUE_APP_API_URL=http://localhost:8000/  # location for fetching data, set to bas
 ```
 
 The default `.env` files can be overriden with `.local` variants (e.g. `.env.development.local`).
-
-## Generate Datasets
-
-The R and bash scripts located in the `scripts` folder are used to generate the datasets for this application, which get saved to the `data/` folder.
-
-See `scripts/README.md` for instructions.
 
 ## Development Server
 
