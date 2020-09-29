@@ -3,6 +3,8 @@
 Jeffrey D Walker, PhD <jeff@walkerenvres.com>  
 [Walker Environmental Research, LLC](https://walkerenvres.com)
 
+[![DOI](https://zenodo.org/badge/161495868.svg)](https://zenodo.org/badge/latestdoi/161495868)
+
 ## About
 
 This repository contains the source code for the Interactive Catchment Explorer (ICE) application of Stream Temperature and Brook Trout Occupancy in the Northeast U.S.
