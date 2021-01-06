@@ -11,7 +11,7 @@
     "data": "http-server ./ -p 8000 --cors"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "bluebird": "^3.5.3",
     "bootstrap": "^3.3.7",
     "bootstrap-select": "^1.12.4",
