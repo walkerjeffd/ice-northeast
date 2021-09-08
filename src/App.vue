@@ -352,25 +352,24 @@ export default {
         },
         overlays: [
           {
-            url: 'http://ecosheds.org:8080/geoserver/wms',
+            url: 'https://ecosheds.org/geoserver/wms',
             label: 'Major Streams',
-            layer: 'sheds:flowlines_strahler_3',
-            visible: true
+            layer: 'sheds:flowlines_strahler_3'
           }, {
-            url: 'http://ecosheds.org:8080/geoserver/wms',
+            url: 'https://ecosheds.org/geoserver/wms',
             label: 'Minor Streams',
             layer: 'sheds:detailed_flowlines',
             minZoom: 10
           }, {
-            url: 'http://ecosheds.org:8080/geoserver/wms',
+            url: 'https://ecosheds.org/geoserver/wms',
             label: 'NHD Waterbodies',
             layer: 'sheds:waterbodies'
           }, {
-            url: 'http://ecosheds.org:8080/geoserver/wms',
+            url: 'https://ecosheds.org/geoserver/wms',
             label: 'HUC8 Boundaries',
             layer: 'sheds:wbdhu8'
           }, {
-            url: 'http://ecosheds.org:8080/geoserver/wms',
+            url: 'https://ecosheds.org/geoserver/wms',
             label: 'HUC12 Boundaries',
             layer: 'sheds:wbdhu12',
             minZoom: 10
