@@ -79,8 +79,8 @@ df_bto <- tbl(con, "bto_model") %>%
     variable %in% c("occ_current", "occ_air_2", "occ_air_4", "occ_air_6", "max_air_occ30", "max_air_occ50", "max_air_occ70")
   ) %>%
   collect() %>%
-  select(-version) %>%
-  spread(variable, value)
+  select(-version, -row.names) %>%
+  pivot_wider(names_from = "variable")
 cat("done\n")
 
 # state -------------------------------------------------------------------
@@ -116,7 +116,9 @@ df <- df_huc %>%
     state %in% c("ME", "NH","VT", "MA", "RI", "CT", "NY", "NJ", "PA", "DE", "MD", "DC", "WV", "VA")
   ) %>%
   rename(id = featureid) %>%
-  mutate_at(vars(-c(id, huc6, huc8, huc10, huc12, state)), signif, digits = 4)
+  mutate(
+    across(-c(id, starts_with("huc"), state), signif, digits = 4)
+  )
 cat("done\n")
 
 # export ------------------------------------------------------------------
