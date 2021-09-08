@@ -463,11 +463,11 @@ export default {
 
       const domain = this.variable.scale.domain.slice(0)
 
-      let scale
+      let scale, positiveValues
       switch (this.transform.selected) {
         case 'log':
           scale = d3.scaleLog()
-          const positiveValues = xf.all.all().map(d => d[this.variable.id]).filter(d => d > 0).sort()
+          positiveValues = xf.all.all().map(d => d[this.variable.id]).filter(d => d > 0).sort()
           if (domain[0] <= 0) domain[0] = +d3.quantile(positiveValues, 0.05).toPrecision(1)
           break
         case 'linear':

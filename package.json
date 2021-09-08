@@ -3,18 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "npm-run-all --parallel data serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "build:staging": "vue-cli-service build --mode staging",
     "lint": "vue-cli-service lint",
-    "data": "http-server ./ -p 8000 --cors"
+    "build:staging": "vue-cli-service build --mode staging",
+    "data": "http-server ./ -p 8000 --cors",
+    "dev": "npm-run-all --parallel data serve"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.4",
     "bluebird": "^3.5.3",
     "bootstrap": "^3.3.7",
     "bootstrap-select": "^1.12.4",
+    "core-js": "^3.6.5",
     "crossfilter2": "^1.4.6",
     "d3": "^5.7.0",
     "d3-tip": "^0.9.1",
@@ -34,13 +35,17 @@
     "webpack-jquery-ui": "^2.0.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.2.0",
-    "@vue/cli-plugin-eslint": "^3.2.0",
-    "@vue/cli-service": "^3.5.3",
-    "@vue/eslint-config-standard": "^4.0.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.8.0",
-    "eslint-plugin-vue": "^5.0.0-0",
+    "@vue/cli-plugin-babel": "^4.5.13",
+    "@vue/cli-plugin-eslint": "^4.5.13",
+    "@vue/cli-service": "^4.5.13",
+    "@vue/eslint-config-standard": "^5.1.2",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-vue": "^6.2.2",
     "http-server": "^0.12.3",
     "npm-run-all": "^4.1.5",
     "vue-template-compiler": "^2.5.17"
