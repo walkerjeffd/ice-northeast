@@ -220,7 +220,7 @@
       :show="modals.about"
       @close="modals.about = false"
       size="lg">
-      <span slot="title">About ICE</span>
+      <span slot="title">Welcome</span>
       <div slot="body">
         <about-modal></about-modal>
       </div>
@@ -337,7 +337,7 @@ export default {
     return {
       loading: true,
       modals: {
-        about: false,
+        about: true,
         guide: false,
         dataset: false,
         download: false,
@@ -783,7 +783,7 @@ a {
   left: 0;
   top: 0;
   padding-top: 50px;
-  z-index: 5000;
+  z-index: 3500;
   background: rgba(0, 0, 0, 0.7);
   text-align: center;
   color: #f5f5f5;

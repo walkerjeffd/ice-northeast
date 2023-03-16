@@ -1,15 +1,7 @@
 <template>
   <div>
-    <h4>Catchment Characteristics</h4>
-
-    <ul>
-      <li>
-        <a href="http://conte-ecology.github.io/shedsGisData/#the-national-hydrography-dataset-high-resolution-delineation-version-2-nhdhrdv2" target="_blank">SHEDS National Hydrography Dataset High Resolution Delineation V2 (NHDHRDV2)</a>
-      </li>
-      <li>
-        <a href="http://conte-ecology.github.io/shedsGisData/#basin-characteristics" target="_blank">SHEDS Basin Characteristics Dataset</a>
-      </li>
-    </ul>
+    <h4>Catchment Delineation and Basin Characteristics</h4>
+    <p>Source: <a href="https://ecosheds.github.io/necd/" target="_blank">Northeast Catchment Delineation (NECD)</a></p>
 
     <table class="table table-condensed table-striped">
       <thead>
@@ -49,9 +41,8 @@
     <hr>
 
     <h4>Stream Temperature Model</h4>
-    <ul>
-      <li><a href="http://ecosheds.org/models/stream-temperature/v1.3.0/" target="_blank">SHEDS Northeast Stream Temperature Model (v1.3.0)</a></li>
-    </ul>
+    <p>Source: <a href="http://ecosheds.org/models/stream-temperature/v1.3.0/" target="_blank">Northeast Stream Temperature Model (v1.3.0)</a></p>
+
     <table class="table table-condensed table-striped">
       <thead>
         <th>Variable</th>
@@ -88,9 +79,8 @@
     <hr>
 
     <h4>Brook Trout Occupancy Model</h4>
-    <ul>
-      <li><a href="http://ecosheds.org/models/brook-trout-occupancy/v1.4.0/" target="_blank">SHEDS Northeast Brook Trout Occupancy Model (v1.4.0)</a></li>
-    </ul>
+    <p>Source: <a href="http://ecosheds.org/models/brook-trout-occupancy/v1.4.0/" target="_blank">Northeast Brook Trout Occupancy Model (v1.4.0)</a></p>
+
     <table class="table table-condensed table-striped">
       <thead>
         <th>Variable</th>

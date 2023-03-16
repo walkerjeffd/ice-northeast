@@ -19,7 +19,7 @@
           <slot name="body"></slot>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" @click="close">Close</button>
+          <button type="button" class="btn btn-primary" @click="close">Close</button>
         </div>
       </div>
     </div>
@@ -44,8 +44,8 @@ export default {
 }
 
 .modal-body {
-  max-height: 480px;
-  overflow-y: auto;
+  max-height: 60vh;
+  overflow-y: scroll;
 }
 
 .modal-body h4 {
