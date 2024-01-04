@@ -3,11 +3,12 @@
 cat("generate-datasets: starting\n")
 
 suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(bit64))
 
 config <- config::get()
 
 con <- DBI::dbConnect(
-  RPostgreSQL::PostgreSQL(),
+  RPostgres::Postgres(),
   dbname = config$db$dbname,
   host = config$db$host,
   port = config$db$port,
@@ -59,28 +60,19 @@ cat("done\n")
 # temp-model --------------------------------------------------------------
 
 cat("fetching temp-model predictions...")
-df_temp <- tbl(con, "temp_model") %>%
-  select(featureid, version, variable, value) %>%
-  filter(
-    version == !!config$`temp-model`$version,
-    variable %in% c("mean_summer_temp", "mean_summer_temp_air2", "mean_summer_temp_air4", "mean_summer_temp_air6", "n_day_temp_gt_18", "n_day_temp_gt_22")
-  ) %>%
-  collect() %>%
-  select(-version) %>%
-  spread(variable, value)
+temp_variables <- c("mean_summer_temp", "mean_summer_temp_air2", "mean_summer_temp_air4", "mean_summer_temp_air6", "n_day_temp_gt_18", "n_day_temp_gt_22")
+df_temp <- read_csv(config$`temp-model`$file, col_types = cols(.default = col_double())) %>%
+  select(featureid, all_of(temp_variables)) |>
+  mutate(featureid = as.integer64(featureid))
 cat("done\n")
 
 # bto-model ---------------------------------------------------------------
 
 cat("fetching bto-model predictions...")
-df_bto <- tbl(con, "bto_model") %>%
-  filter(
-    version == !!config$`bto-model`$version,
-    variable %in% c("occ_current", "occ_air_2", "occ_air_4", "occ_air_6", "max_air_occ30", "max_air_occ50", "max_air_occ70")
-  ) %>%
-  collect() %>%
-  select(-version, -row.names) %>%
-  pivot_wider(names_from = "variable")
+bto_variables <- c("occ_current", "occ_air_2", "occ_air_4", "occ_air_6", "max_air_occ30", "max_air_occ50", "max_air_occ70")
+df_bto <- read_csv(config$`bto-model`$file, col_types = cols(.default = col_double())) %>%
+  select(featureid, all_of(bto_variables)) |>
+  mutate(featureid = as.integer64(featureid))
 cat("done\n")
 
 # state -------------------------------------------------------------------
@@ -117,7 +109,7 @@ df <- df_huc %>%
   ) %>%
   rename(id = featureid) %>%
   mutate(
-    across(-c(id, starts_with("huc"), state), signif, digits = 4)
+    across(-c(id, starts_with("huc"), state), \(x) signif(x, digits = 4))
   )
 cat("done\n")
 

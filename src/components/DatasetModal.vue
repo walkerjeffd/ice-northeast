@@ -41,7 +41,7 @@
     <hr>
 
     <h4>Stream Temperature Model</h4>
-    <p>Source: <a href="http://ecosheds.org/models/stream-temperature/v1.3.0/" target="_blank">Northeast Stream Temperature Model (v1.3.0)</a></p>
+    <p>Source: <a href="https://ecosheds.github.io/northeast-temp-model/" target="_blank">Northeast Stream Temperature Model (v1.4.0)</a></p>
 
     <table class="table table-condensed table-striped">
       <thead>
@@ -79,7 +79,7 @@
     <hr>
 
     <h4>Brook Trout Occupancy Model</h4>
-    <p>Source: <a href="http://ecosheds.org/models/brook-trout-occupancy/v1.4.0/" target="_blank">Northeast Brook Trout Occupancy Model (v1.4.0)</a></p>
+    <p>Source: <a href="https://ecosheds.github.io/northeast-bto-model/" target="_blank">Northeast Brook Trout Occupancy Model (v2.1.0)</a></p>
 
     <table class="table table-condensed table-striped">
       <thead>

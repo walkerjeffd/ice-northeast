@@ -351,29 +351,29 @@ export default {
           minZoom: 5
         },
         overlays: [
-          {
-            url: 'https://ecosheds.org/geoserver/wms',
-            label: 'Major Streams',
-            layer: 'sheds:flowlines_strahler_3'
-          }, {
-            url: 'https://ecosheds.org/geoserver/wms',
-            label: 'Minor Streams',
-            layer: 'sheds:detailed_flowlines',
-            minZoom: 10
-          }, {
-            url: 'https://ecosheds.org/geoserver/wms',
-            label: 'NHD Waterbodies',
-            layer: 'sheds:waterbodies'
-          }, {
-            url: 'https://ecosheds.org/geoserver/wms',
-            label: 'HUC8 Boundaries',
-            layer: 'sheds:wbdhu8'
-          }, {
-            url: 'https://ecosheds.org/geoserver/wms',
-            label: 'HUC12 Boundaries',
-            layer: 'sheds:wbdhu12',
-            minZoom: 10
-          }
+          // {
+          //   url: 'https://ecosheds.org/geoserver/wms',
+          //   label: 'Major Streams',
+          //   layer: 'sheds:flowlines_strahler_3'
+          // }, {
+          //   url: 'https://ecosheds.org/geoserver/wms',
+          //   label: 'Minor Streams',
+          //   layer: 'sheds:detailed_flowlines',
+          //   minZoom: 10
+          // }, {
+          //   url: 'https://ecosheds.org/geoserver/wms',
+          //   label: 'NHD Waterbodies',
+          //   layer: 'sheds:waterbodies'
+          // }, {
+          //   url: 'https://ecosheds.org/geoserver/wms',
+          //   label: 'HUC8 Boundaries',
+          //   layer: 'sheds:wbdhu8'
+          // }, {
+          //   url: 'https://ecosheds.org/geoserver/wms',
+          //   label: 'HUC12 Boundaries',
+          //   layer: 'sheds:wbdhu12',
+          //   minZoom: 10
+          // }
         ]
       },
       show: {
@@ -398,7 +398,7 @@ export default {
       },
       regionFilter: {
         config: {
-          actionsBox: true,
+          actionsBox: false,
           selectedTextFormat: 'count',
           countSelectedText: '{0} states selected',
           dropupAuto: false

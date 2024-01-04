@@ -18,10 +18,10 @@
             <a href="https://ecosheds.github.io/necd/" target="_blank">Northeast Catchment Delineation</a>: a custom, high resolution catchment delineation and basin characteristics dataset of the Northeast U.S.
           </li>
           <li>
-            <a href="https://ecosheds.org/models/stream-temperature/v1.3.0/" target="_blank">Northeast Stream Temperature Model</a>: a hierarchical Bayesian model for predicting daily mean stream temperature using observed data from the <a href="http://db.ecosheds.org/" target="_blank">Northeast Stream Temperature Database</a>.
+            <a href="https://ecosheds.github.io/northeast-temp-model/" target="_blank">Northeast Stream Temperature Model</a>: a hierarchical Bayesian model for predicting daily mean stream temperature using observed data from the <a href="http://db.ecosheds.org/" target="_blank">Northeast Stream Temperature Database</a>.
           </li>
           <li>
-            <a href="http://ecosheds.org/models/brook-trout-occupancy/v1.4.0/" target="_blank">Northeast Brook Trout Occupancy Model</a>: a logistic mixed-effects model for predicting the probability of Brook Trout occupancy based on predicted stream temperatures under historical and potential climate change scenarios.
+            <a href="https://ecosheds.github.io/northeast-bto-model/" target="_blank">Northeast Brook Trout Occupancy Model</a>: a logistic mixed-effects model for predicting the probability of Brook Trout occupancy based on predicted stream temperatures under historical and potential climate change scenarios.
           </li>
         </ul>
 
@@ -32,7 +32,7 @@
         </p>
 
         <p>
-          <strong>Other Versions:</strong> ICE has been adapted for a variety of other datasets and models around the country. Other versions of ICE can be found at <a href="http://ice.ecosheds.org">http://ice.ecosheds.org</a> and <a href="https://usgs.gov/apps/ecosheds">https://usgs.gov/apps/ecosheds</a>.
+          <strong>Other Versions:</strong> ICE has been adapted for a variety of other datasets and models around the country. Other versions of ICE can be found at <a href="https://usgs.gov/apps/ecosheds">https://usgs.gov/apps/ecosheds</a>.
         </p>
         <p>
           <strong>Citation:</strong> Walker JD, Letcher BH, Rodgers KD, Muhlfeld CC, D'Angelo VS (2020). An Interactive Data Visualization Framework for Exploring Geospatial Environmental Datasets and Model Predictions. Water 12(10):2928. <a href="https://doi.org/10.3390/w12102928" target="_blank">https://doi.org/10.3390/w12102928</a>

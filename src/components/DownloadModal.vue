@@ -147,37 +147,37 @@
         <ul>
           <li>
             <a
-              href="http://ecosheds.org/assets/nhdhrd/v2/spatial_01.zip"
+              href="https://ecosheds.s3.amazonaws.com/necd/delineation/spatial_01.zip"
               download
             >Region 01 Catchments (spatial_01.zip | 324 MB)</a>
           </li>
           <li>
             <a
-              href="http://ecosheds.org/assets/nhdhrd/v2/spatial_02.zip"
+              href="https://ecosheds.s3.amazonaws.com/necd/delineation/spatial_02.zip"
               download
             >Region 02 Catchments (spatial_02.zip | 537 MB)</a>
           </li>
           <li>
             <a
-              href="http://ecosheds.org/assets/nhdhrd/v2/spatial_03.zip"
+              href="https://ecosheds.s3.amazonaws.com/necd/delineation/spatial_03.zip"
               download
             >Region 03 Catchments (spatial_03.zip | 114 MB)</a>
           </li>
           <li>
             <a
-              href="http://ecosheds.org/assets/nhdhrd/v2/spatial_04.zip"
+              href="https://ecosheds.s3.amazonaws.com/necd/delineation/spatial_04.zip"
               download
             >Region 04 Catchments (spatial_04.zip | 203 MB)</a>
           </li>
           <li>
             <a
-              href="http://ecosheds.org/assets/nhdhrd/v2/spatial_05.zip"
+              href="https://ecosheds.s3.amazonaws.com/necd/delineation/spatial_05.zip"
               download
             >Region 05 Catchments (spatial_05.zip | 353 MB)</a>
           </li>
           <li>
             <a
-              href="http://ecosheds.org/assets/nhdhrd/v2/spatial_06.zip"
+              href="https://ecosheds.s3.amazonaws.com/necd/delineation/spatial_06.zip"
               download
             >Region 06 Catchments (spatial_06.zip | 41 MB)</a>
           </li>

@@ -2,7 +2,7 @@
   <div class="ice-header">
     <span class="ice-header-brand">ICE | {{ title }}</span>
     <div class="ice-header-links">
-      <a href="https://ecosheds.org">SHEDS Home</a>
+      <a href="https://www.usgs.gov/apps/ecosheds/">EcoSHEDS</a>
     </div>
   </div>
 </template>
